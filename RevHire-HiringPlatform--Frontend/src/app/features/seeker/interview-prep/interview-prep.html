@@ -1,0 +1,195 @@
+<div class="interview-prep-container">
+    <div class="prep-header">
+        <h1>Interview Preparation</h1>
+        <p>Master specific roles or hone your technical skills with curated practice questions.</p>
+    </div>
+
+    <div class="prep-controls card-box">
+        <div class="control-group type-toggle">
+            <button class="toggle-btn" [class.active]="selectedType() === 'ROLE'" (click)="onTypeChange('ROLE')">
+                <i class="bi bi-briefcase"></i> By Role
+            </button>
+            <button class="toggle-btn" [class.active]="selectedType() === 'SKILL'" (click)="onTypeChange('SKILL')">
+                <i class="bi bi-tools"></i> By Skill
+            </button>
+            <button class="toggle-btn" [class.active]="selectedType() === 'HR'" (click)="onTypeChange('HR')">
+                <i class="bi bi-people"></i> HR Interview
+            </button>
+        </div>
+
+        <div class="control-group filter-select" [class.hidden]="selectedType() === 'HR'">
+            @if (selectedType() === 'ROLE') {
+            <select class="form-select-custom" [ngModel]="selectedCategory()"
+                (ngModelChange)="selectedCategory.set($event); fetchQuestions()">
+                <option value="" disabled>Select a Role to practice...</option>
+                <optgroup label="Technology">
+                @for (role of technologyRoles(); track role) {
+                <option [value]="role">{{ role }}</option>
+                }
+                </optgroup>
+                <optgroup label="Design">
+                @for (role of designDisplayRoles(); track role) {
+                <option [value]="role">{{ role }}</option>
+                }
+                </optgroup>
+                <optgroup label="Finance">
+                @for (role of financeDisplayRoles(); track role) {
+                <option [value]="role">{{ role }}</option>
+                }
+                </optgroup>
+                <optgroup label="Marketing">
+                @for (role of marketingDisplayRoles(); track role) {
+                <option [value]="role">{{ role }}</option>
+                }
+                </optgroup>
+                <optgroup label="HealthCare">
+                @for (role of healthCareDisplayRoles(); track role) {
+                <option [value]="role">{{ role }}</option>
+                }
+                </optgroup>
+                <optgroup label="Operations">
+                @for (role of operationsDisplayRoles(); track role) {
+                <option [value]="role">{{ role }}</option>
+                }
+                </optgroup>
+                <optgroup label="Sales">
+                @for (role of salesDisplayRoles(); track role) {
+                <option [value]="role">{{ role }}</option>
+                }
+                </optgroup>
+            </select>
+            } @else if (selectedType() === 'SKILL') {
+            <select class="form-select-custom" [ngModel]="selectedCategory()"
+                (ngModelChange)="selectedCategory.set($event); fetchQuestions()">
+                <option value="" disabled>Select a Skill to practice...</option>
+                @for (skill of displaySkills(); track skill) {
+                <option [value]="skill">{{ skill }}</option>
+                }
+            </select>
+            }
+        </div>
+    </div>
+
+
+    <!-- @if (appliedRoles().length > 0 && selectedType() !== 'HR') { -->
+    <!-- <div class="applied-roles-section mt-4 mb-4">
+        <h4><i class="bi bi-clock-history"></i> Prepare for Your Applied Roles:</h4>
+        <div class="applied-chips">
+            @for (role of appliedRoles(); track role) {
+            <button class="applied-chip"
+                (click)="selectedType.set('ROLE'); selectedCategory.set(role); fetchQuestions()">
+                {{ role }}
+                <i class="bi bi-arrow-right-short"></i>
+            </button>
+            }
+        </div>
+    </div>
+    } -->
+
+    @if (selectedCategory() || selectedType() === 'HR') {
+    <div class="prep-content">
+        <div class="content-header">
+            <h2>
+                @if (selectedType() === 'HR') {
+                <i class="bi bi-people-fill text-primary"></i> Behavioral & HR Interview
+                } @else {
+                {{ selectedType() === 'ROLE' ? 'Role Simulator' : 'Skill Assessment' }}: <span>{{ selectedCategory()
+                    }}</span>
+                }
+            </h2>
+            <div class="q-count"><i class="bi bi-card-list"></i> {{ questions().length }} Total Questions</div>
+        </div>
+
+        @if (loading()) {
+        <div class="skeleton-list">
+            @for (i of [1,2,3,4,5]; track i) {
+            <div class="skeleton-card"></div>
+            }
+        </div>
+        } @else if (questions().length === 0) {
+        <div class="no-data-msg">
+            <i class="bi bi-inbox"></i>
+            <p>No questions currently listed for this {{ selectedType().toLowerCase() }}. Contact support to add more!
+            </p>
+        </div>
+        } @else {
+
+        <!-- Basic Questions Section -->
+        @if (basicQuestions().length > 0) {
+        <div class="difficulty-section">
+            <div class="section-badge basic">BASIC CONCEPTS</div>
+            <div class="questions-grid">
+                @for (q of basicQuestions(); track q.id) {
+                <ng-container *ngTemplateOutlet="questionCard; context: { $implicit: q }"></ng-container>
+                }
+            </div>
+        </div>
+        }
+
+        <!-- Moderate Questions Section -->
+        @if (moderateQuestions().length > 0) {
+        <div class="difficulty-section mt-5">
+            <div class="section-badge moderate">MODERATE / INTERMEDIATE</div>
+            <div class="questions-grid">
+                @for (q of moderateQuestions(); track q.id) {
+                <ng-container *ngTemplateOutlet="questionCard; context: { $implicit: q }"></ng-container>
+                }
+            </div>
+        </div>
+        }
+
+        <!-- Advanced Questions Section -->
+        @if (advancedQuestions().length > 0) {
+        <div class="difficulty-section mt-5">
+            <div class="section-badge advanced">ADVANCED / EXPERT</div>
+            <div class="questions-grid">
+                @for (q of advancedQuestions(); track q.id) {
+                <ng-container *ngTemplateOutlet="questionCard; context: { $implicit: q }"></ng-container>
+                }
+            </div>
+        </div>
+        }
+
+        <div class="end-msg mt-5">
+            <p><i class="bi bi-check-circle-fill text-primary"></i> You've reached the end of the prep list. Good luck!
+            </p>
+        </div>
+        }
+    </div>
+    } @else {
+    <div class="empty-state">
+        <div class="empty-icon"><i class="bi bi-person-video3"></i></div>
+        <h3>Ready to Prepare?</h3>
+        <p>Select a <b>role</b>, <b>skill</b>, or <b>HR section</b> from the options above to jumpstart your
+            preparation.</p>
+    </div>
+    }
+</div>
+
+<!-- Reusable Question Card Template -->
+<ng-template #questionCard let-q>
+    <div class="question-card">
+        <div class="q-header">
+            <span class="difficulty-tag" [ngClass]="q.difficulty.toLowerCase()">
+                {{ q.difficulty | titlecase }}
+            </span>
+        </div>
+        <div class="q-body">
+            <h3>{{ q.question }}</h3>
+            @if (q.hint) {
+            <p class="q-hint"><strong>Hint:</strong> {{ q.hint }}</p>
+            }
+            <div class="answer-section">
+                <button class="btn-reveal" (click)="q.show = !q.show">
+                    {{ q.show ? 'Hide Answer' : 'Show Sample Answer' }}
+                    <i class="bi" [ngClass]="q.show ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                </button>
+                @if (q.show) {
+                <div class="answer-box animated fadeIn">
+                    {{ q.answer }}
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</ng-template>

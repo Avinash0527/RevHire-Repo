@@ -1,0 +1,74 @@
+<div class="auth-page">
+    <div class="auth-left">
+        <div class="auth-left-content">
+            <a routerLink="/" class="auth-brand">⚡ Rev<span>Hire</span></a>
+            <h2>Find Your Next<br>Opportunity</h2>
+            <p>Join thousands of professionals who have found their dream careers through RevHire.</p>
+            <div class="auth-features">
+                @for (f of features; track f.text) {
+                <div class="feature-item"><i class="bi" [ngClass]="f.icon"></i><span>{{ f.text }}</span></div>
+                }
+            </div>
+            <div class="floating-testimonial">
+                <div class="tesitmonial-text">"RevHire helped me land a senior role in 2 weeks!"</div>
+                <div class="testimonial-author">— Sarah K., Software Engineer</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="auth-right">
+        <div class="auth-form-card">
+            <div class="auth-header">
+                <h1>Welcome Back</h1>
+                <p>Sign in to your RevHire account</p>
+            </div>
+
+
+
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                <div class="form-group">
+                    <label class="form-label-custom">Email Address</label>
+                    <input formControlName="email" type="email" class="form-control-custom"
+                        placeholder="you@example.com" [ngClass]="{'is-invalid': submitted && f['email'].errors}">
+                    @if (submitted && f['email'].errors?.['required']) { <div class="field-error">Email is required
+                    </div>
+                    }
+                    @if (submitted && f['email'].errors?.['email']) { <div class="field-error">Enter a valid email</div>
+                    }
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label-custom">Password</label>
+                    <div class="password-field">
+                        <input formControlName="password" [type]="showPwd ? 'text' : 'password'"
+                            class="form-control-custom" placeholder="Your password"
+                            [ngClass]="{'is-invalid': submitted && f['password'].errors}">
+                        <button type="button" class="pwd-toggle" (click)="showPwd = !showPwd">
+                            <i class="bi" [ngClass]="showPwd ? 'bi-eye-slash' : 'bi-eye'"></i>
+                        </button>
+                    </div>
+                    @if (submitted && f['password'].errors?.['required']) { <div class="field-error">Password is
+                        required
+                    </div> }
+                    <div class="forgot-row">
+                        <button type="button" class="forgot-btn" (click)="onForgotPassword()" [disabled]="forgotLoading">
+                            @if (forgotLoading) { Sending... } @else { Forgot Password? }
+                        </button>
+                    </div>
+                </div>
+
+                @if (errorMsg) { <div class="form-error">{{ errorMsg }}</div> }
+                @if (forgotMsg) { <div class="form-info">{{ forgotMsg }}</div> }
+
+                <button type="submit" class="btn-submit" [disabled]="loading">
+                    @if (loading) { <span class="spinner-sm"></span> Signing in... }
+                    @else { Sign In <i class="bi bi-arrow-right"></i> }
+                </button>
+            </form>
+
+            <p class="auth-switch">
+                Don't have an account? <a routerLink="/register">Create one free →</a>
+            </p>
+        </div>
+    </div>
+</div>

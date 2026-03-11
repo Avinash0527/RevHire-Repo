@@ -1,0 +1,271 @@
+<div class="page-container animate-fade-in">
+    <div class="post-job-header">
+        <h1 class="page-title">{{ isEditMode() ? 'Edit Job Posting' : 'Post a New Job' }}</h1>
+        <p class="page-sub">{{ isEditMode() ? 'Update the details of your job listing.' : 'Fill in the details to reach
+            thousands of talent.' }}</p>
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="step-indicator-wrapper">
+        @for (step of [1,2,3]; track step) {
+        <div class="step-item" [class.active]="currentStep() >= step" [class.current]="currentStep() === step">
+            <div class="step-num">@if (currentStep() > step) { <i class="bi bi-check"></i> } @else { {{ step }} }</div>
+            <div class="step-label">
+                @if (step === 1) { Basic Info }
+                @else if (step === 2) { Details & Req }
+                @else { Review }
+            </div>
+        </div>
+        @if (step < 3) { <div class="step-line" [class.active]="currentStep() > step">
+    </div>
+    }
+    }
+</div>
+
+<div class="form-container-card">
+    <form [formGroup]="jobForm">
+
+        <!-- Step 1: Basic Info -->
+        @if (currentStep() === 1) {
+        <div class="form-section animate-slide-in">
+            <h2 class="form-section-title">Job Essentials</h2>
+            <div class="form-grid">
+                <div class="form-group col-span-2">
+                    <label class="form-label-custom">Job Title *</label>
+                    <input formControlName="title" type="text" class="form-control-custom"
+                        placeholder="e.g. Senior Product Designer"
+                        [ngClass]="{'is-invalid': jobForm.get('title')?.errors && jobForm.get('title')?.touched}">
+                    @if (jobForm.get('title')?.errors?.['required'] && jobForm.get('title')?.touched) {
+                    <div class="field-error text-danger text-sm mt-1">Job title is required</div>
+                    }
+                </div>
+                <div class="form-group">
+                    <label class="form-label-custom">Category *</label>
+                    <select formControlName="category" class="form-control-custom">
+                        <option value="TECHNOLOGY">Technology</option>
+                        <option value="DESIGN">Design</option>
+                        <option value="FINANCE">Finance</option>
+                        <option value="MARKETING">Marketing</option>
+                        <option value="HEALTHCARE">Healthcare</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label-custom">Job Type *</label>
+                    <select formControlName="jobType" class="form-control-custom">
+                        <option value="FULL_TIME">Full Time</option>
+                        <option value="PART_TIME">Part Time</option>
+                        <option value="CONTRACT">Contract</option>
+                        <option value="REMOTE">Remote</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label-custom">Experience Level *</label>
+                    <select formControlName="experienceLevel" class="form-control-custom">
+                        <option value="ENTRY">Entry Level (0 - 2 yrs)</option>
+                        <option value="MID">Mid Level (3 - 5 yrs)</option>
+                        <option value="SENIOR">Senior Level (6 - 9 yrs)</option>
+                        <option value="LEAD">Lead / Manager (10+ yrs)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label-custom">Location *</label>
+                    <input formControlName="location" type="text" class="form-control-custom"
+                        placeholder="e.g. Remote, or City, Country"
+                        [ngClass]="{'is-invalid': jobForm.get('location')?.errors && jobForm.get('location')?.touched}">
+                    @if (jobForm.get('location')?.errors?.['required'] && jobForm.get('location')?.touched) {
+                    <div class="field-error text-danger text-sm mt-1">Location is required</div>
+                    }
+                </div>
+            </div>
+
+            <div class="form-row mt-3">
+                <div class="form-group flex-1">
+                    <label class="form-label-custom">Salary Range (Min)</label>
+                    <input formControlName="salaryMin" type="number" class="form-control-custom" placeholder="40000">
+                    @if (jobForm.get('salaryMin')?.errors && jobForm.get('salaryMin')?.touched) {
+                    <div class="field-error text-danger text-sm mt-1">Valid min salary is required</div>
+                    }
+                </div>
+                <div class="form-group flex-1">
+                    <label class="form-label-custom">Salary Range (Max)</label>
+                    <input formControlName="salaryMax" type="number" class="form-control-custom" placeholder="80000">
+                    @if (jobForm.get('salaryMax')?.errors && jobForm.get('salaryMax')?.touched) {
+                    <div class="field-error text-danger text-sm mt-1">Valid max salary is required</div>
+                    }
+                </div>
+                <div class="form-group">
+                    <label class="form-label-custom">Number of Openings *</label>
+                    <input formControlName="openings" type="number" min="1" class="form-control-custom" placeholder="1"
+                        [ngClass]="{'is-invalid': jobForm.get('openings')?.errors && jobForm.get('openings')?.touched}">
+                    @if (jobForm.get('openings')?.errors && jobForm.get('openings')?.touched) {
+                    <div class="field-error text-danger text-sm mt-1">Openings must be at least 1</div>
+                    }
+                </div>
+                @if (isEditMode()) {
+                <div class="form-group flex-1">
+                    <label class="form-label-custom">Job Status</label>
+                    <select formControlName="status" class="form-control-custom">
+                        <option value="ACTIVE">Active</option>
+                        <option value="CLOSED">Closed</option>
+                        <option value="FILLED">Filled</option>
+                    </select>
+                </div>
+                }
+            </div>
+
+            <div class="form-row mt-3">
+                <div class="form-group flex-1">
+                    <label class="form-label-custom">Education Requirement</label>
+                    <select formControlName="education" class="form-control-custom">
+                        <option value="Any / Not specified">Any / Not specified</option>
+                        <option value="HIGH_SCHOOL">High School</option>
+                        <option value="ASSOCIATE">Associate Degree</option>
+                        <option value="BACHELOR">Bachelor's Degree</option>
+                        <option value="MASTER">Master's Degree</option>
+                        <option value="PHD">PhD / Doctorate</option>
+                    </select>
+                </div>
+                <div class="form-group flex-1">
+                    <label class="form-label-custom">Deadline *</label>
+                    <input formControlName="deadline" type="date" class="form-control-custom"
+                        [ngClass]="{'is-invalid': jobForm.get('deadline')?.errors && jobForm.get('deadline')?.touched}">
+                    @if (jobForm.get('deadline')?.errors?.['required'] && jobForm.get('deadline')?.touched) {
+                    <div class="field-error text-danger text-sm mt-1">Deadline is required</div>
+                    }
+                    @if (jobForm.get('deadline')?.errors?.['futureDate'] && jobForm.get('deadline')?.touched) {
+                    <div class="field-error text-danger text-sm mt-1">Deadline must be a future date</div>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- Step 2: Details & Req -->
+        @if (currentStep() === 2) {
+        <div class="form-section animate-slide-in">
+            <div class="form-group">
+                <label class="form-label-custom">Job Description *</label>
+                <textarea formControlName="description" class="form-control-custom" rows="6"
+                    placeholder="Describe the role and your company..."
+                    [ngClass]="{'is-invalid': jobForm.get('description')?.errors && jobForm.get('description')?.touched}"></textarea>
+                @if (jobForm.get('description')?.errors?.['required'] && jobForm.get('description')?.touched) {
+                <div class="field-error text-danger text-sm mt-1">Job description is required</div>
+                }
+            </div>
+
+            <div class="mt-4">
+                <div class="form-header-flex">
+                    <label class="form-label-custom">Responsibilities *</label>
+                    <button type="button" class="btn-add-sm" (click)="addResp()"><i class="bi bi-plus"></i> Add</button>
+                </div>
+                <div formArrayName="responsibilities" class="dynamic-list">
+                    @for (ctrl of respArr.controls; track ctrl; let i = $index) {
+                    <div class="dynamic-input-block">
+                        <div class="dynamic-input-row">
+                            <input [formControlName]="i" type="text" class="form-control-custom"
+                                placeholder="Responsibility #{{i+1}}"
+                                [ngClass]="{'is-invalid': ctrl.errors && ctrl.touched}">
+                            <button type="button" class="btn-remove-sm" (click)="removeResp(i)">&times;</button>
+                        </div>
+                        @if (ctrl.errors?.['required'] && ctrl.touched) {
+                        <div class="field-error text-danger text-sm mt-1">Responsibility cannot be empty</div>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <div class="form-header-flex">
+                    <label class="form-label-custom">Requirements *</label>
+                    <button type="button" class="btn-add-sm" (click)="addReq()"><i class="bi bi-plus"></i> Add</button>
+                </div>
+                <div formArrayName="requirements" class="dynamic-list">
+                    @for (ctrl of reqArr.controls; track ctrl; let i = $index) {
+                    <div class="dynamic-input-block">
+                        <div class="dynamic-input-row">
+                            <input [formControlName]="i" type="text" class="form-control-custom"
+                                placeholder="Requirement #{{i+1}}"
+                                [ngClass]="{'is-invalid': ctrl.errors && ctrl.touched}">
+                            <button type="button" class="btn-remove-sm" (click)="removeReq(i)">&times;</button>
+                        </div>
+                        @if (ctrl.errors?.['required'] && ctrl.touched) {
+                        <div class="field-error text-danger text-sm mt-1">Requirement cannot be empty</div>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <label class="form-label-custom">Tags / Skills * (Comma separated)</label>
+                <input formControlName="skills" type="text" class="form-control-custom"
+                    placeholder="e.g. Angular, TypeScript, UI/UX"
+                    [ngClass]="{'is-invalid': jobForm.get('skills')?.errors && jobForm.get('skills')?.touched}">
+                @if (jobForm.get('skills')?.errors?.['required'] && jobForm.get('skills')?.touched) {
+                <div class="field-error text-danger text-sm mt-1">At least one skill is required</div>
+                }
+            </div>
+        </div>
+        }
+
+        <!-- Step 3: Review -->
+        @if (currentStep() === 3) {
+        <div class="form-section animate-slide-in">
+            <div class="review-box">
+                <div class="review-header">
+                    <div class="rh-company">⚡ {{ companyDisplayName() }}</div>
+                    <h2 class="rh-title">{{ jobForm.value.title || 'Untitled Job' }}</h2>
+                    <div class="rh-meta">
+                        <span>{{ jobForm.value.location }}</span> ·
+                        <span>{{ jobForm.value.category }}</span> ·
+                        <span>{{ jobForm.value.jobType }}</span>
+                    </div>
+                </div>
+                <div class="review-body">
+                    <h3>About the role</h3>
+                    <p>{{ jobForm.value.description }}</p>
+
+                    <h3>Quick Recap</h3>
+                    <ul class="recap-list">
+                        <li><b>Experience:</b> {{ jobForm.value.experienceLevel }}</li>
+                        <li><b>Salary:</b> ₹{{ jobForm.value.salaryMin }} - ₹{{ jobForm.value.salaryMax }}</li>
+                        <li><b>Deadline:</b> {{ jobForm.value.deadline }}</li>
+                        <li><b>Skills:</b> {{ jobForm.value.skills }}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="final-agreement mt-4">
+                <label class="checkbox-label">
+                    <input type="checkbox" [(ngModel)]="agreed" [ngModelOptions]="{standalone: true}">
+                    By clicking 'Post Job', you agree to our employer terms and conditions.
+                </label>
+            </div>
+            @if (submitError()) {
+            <div class="field-error-banner mt-3">
+                <i class="bi bi-exclamation-circle-fill me-2"></i>{{ submitError() }}
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Sticky Navigation -->
+        <div class="form-footer mt-5">
+            <button type="button" class="btn-outline-custom" (click)="prevStep()"
+                [disabled]="currentStep() === 1">Back</button>
+            <div class="flex-spacer"></div>
+            @if (currentStep() < 3) { <button type="button" class="btn-primary-custom" (click)="nextStep()">
+                Continue <i class="bi bi-arrow-right"></i>
+                </button>
+                } @else {
+                <button type="button" class="btn-post-final" [disabled]="!agreed || posting()" (click)="submitJob()">
+                    @if (posting()) { <span class="spinner-sm"></span> {{ isEditMode() ? 'Updating...' : 'Posting...' }}
+                    }
+                    @else { <i class="bi bi-send-fill"></i> {{ isEditMode() ? 'Update Job Posting' : 'Post Job Now' }} }
+                </button>
+                }
+        </div>
+
+    </form>
+</div>
+</div>

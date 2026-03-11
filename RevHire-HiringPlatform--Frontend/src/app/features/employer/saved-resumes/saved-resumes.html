@@ -1,0 +1,147 @@
+<div class="page-container animate-fade-in">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Saved Resumes</h1>
+            <p class="page-sub">Candidates you've bookmarked — only visible to you, never disclosed to seekers.</p>
+        </div>
+        <div class="sr-count-badge">{{ savedList().length }} saved</div>
+    </div>
+
+    @if (loading()) {
+    <div class="applicants-list">
+        <div class="applicant-skeleton"></div>
+        <div class="applicant-skeleton"></div>
+        <div class="applicant-skeleton"></div>
+    </div>
+    } @else if (savedList().length === 0) {
+    <div class="empty-state">
+        <div class="empty-icon">🔖</div>
+        <h3>No saved resumes yet</h3>
+        <p>When you review applicants, click "Save Resume" to bookmark top candidates here.</p>
+    </div>
+    } @else {
+    <div class="sr-categories">
+        @for (group of categorizedResumes(); track group.role) {
+        <div class="sr-category-section">
+            <h2 class="sr-category-title">{{ group.role }} <span class="sr-category-count">({{ group.items.length
+                    }})</span></h2>
+
+            <div class="sr-grid">
+                @for (item of group.items; track item.id) {
+                <div class="sr-card" [class.expanded]="expandedId() === item.id">
+                    <!-- Card Header -->
+                    <div class="sr-card-header">
+                        <div class="sr-avatar">{{ item.seekerName.charAt(0) }}</div>
+                        <div class="sr-meta">
+                            <div class="sr-name">{{ item.seekerName }}</div>
+                            <div class="sr-email">{{ item.seekerEmail }}</div>
+                            <div class="sr-role-tag">
+                                <i class="bi bi-briefcase"></i> Applied for: <b>{{ item.appliedForRole }}</b>
+                            </div>
+                            <div class="sr-saved-on">Saved on {{ item.savedAt }}</div>
+                        </div>
+                        <div class="sr-actions">
+                            <button class="btn-view-resume" (click)="toggleExpand(item.id)">
+                                <i class="bi" [class.bi-eye]="expandedId() !== item.id"
+                                    [class.bi-eye-slash]="expandedId() === item.id"></i>
+                                {{ expandedId() === item.id ? 'Hide Resume' : 'View Resume' }}
+                            </button>
+                            <button class="btn-remove" (click)="removeSaved(item)" title="Remove bookmark">
+                                <i class="bi bi-bookmark-x"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Expanded Resume Snapshot -->
+                    @if (expandedId() === item.id) {
+                    <div class="resume-snapshot animate-fade-in">
+                        <div class="rs-divider"></div>
+                        <div class="rs-section-title">
+                            <i class="bi bi-file-earmark-person"></i>
+                            Resume submitted for: <em>{{ item.appliedForRole }}</em>
+                        </div>
+
+                        <!-- Summary -->
+                        <div class="rs-info-grid">
+                            <div class="rs-field"><span class="rs-label">Full Name</span><span>{{
+                                    item.resumeSnapshot.fullName }}</span></div>
+                            <div class="rs-field"><span class="rs-label">Title</span><span>{{ item.resumeSnapshot.title
+                                    }}</span></div>
+                            <div class="rs-field"><span class="rs-label">Email</span><span>{{ item.resumeSnapshot.email
+                                    }}</span></div>
+                            <div class="rs-field"><span class="rs-label">Phone</span><span>{{ item.resumeSnapshot.phone
+                                    }}</span></div>
+                            <div class="rs-field"><span class="rs-label">Location</span><span>{{
+                                    item.resumeSnapshot.location }}</span></div>
+                            @if (item.resumeSnapshot.linkedin) {
+                            <div class="rs-field"><span class="rs-label">LinkedIn</span><span>{{
+                                    item.resumeSnapshot.linkedin }}</span></div>
+                            }
+                        </div>
+
+                        <div class="rs-block">
+                            <div class="rs-block-title">Summary</div>
+                            <p class="rs-summary-text">{{ item.resumeSnapshot.summary }}</p>
+                        </div>
+
+                        <!-- Skills -->
+                        <div class="rs-block">
+                            <div class="rs-block-title">Skills</div>
+                            <div class="rs-skills">
+                                @for (skill of item.resumeSnapshot.skills; track skill.name) {
+                                <span class="skill-chip skill-chip-{{ skill.level.toLowerCase() }}">{{ skill.name }}
+                                    <span class="skill-level">{{ skill.level }}</span></span>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Experience -->
+                        @if (item.resumeSnapshot.experiences.length > 0) {
+                        <div class="rs-block">
+                            <div class="rs-block-title">Work Experience</div>
+                            @for (exp of item.resumeSnapshot.experiences; track exp.id) {
+                            <div class="rs-exp-item">
+                                <div class="rs-exp-title">{{ exp.title }}</div>
+                                <div class="rs-exp-company">{{ exp.company }} · {{ exp.startDate }} – {{ exp.current ?
+                                    'Present' : exp.endDate }}</div>
+                                <p class="rs-exp-desc">{{ exp.description }}</p>
+                            </div>
+                            }
+                        </div>
+                        }
+
+                        <!-- Education -->
+                        @if (item.resumeSnapshot.education.length > 0) {
+                        <div class="rs-block">
+                            <div class="rs-block-title">Education</div>
+                            @for (edu of item.resumeSnapshot.education; track edu.id) {
+                            <div class="rs-exp-item">
+                                <div class="rs-exp-title">{{ edu.degree }}</div>
+                                <div class="rs-exp-company">{{ edu.institution }} · {{ edu.startYear }} – {{ edu.endYear
+                                    }}</div>
+                            </div>
+                            }
+                        </div>
+                        }
+
+                        <!-- Certifications -->
+                        @if (item.resumeSnapshot.certifications.length > 0) {
+                        <div class="rs-block">
+                            <div class="rs-block-title">Certifications</div>
+                            <div class="rs-skills">
+                                @for (cert of item.resumeSnapshot.certifications; track cert) {
+                                <span class="cert-chip"><i class="bi bi-patch-check-fill"></i> {{ cert }}</span>
+                                }
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+        }
+    </div>
+    }
+</div>

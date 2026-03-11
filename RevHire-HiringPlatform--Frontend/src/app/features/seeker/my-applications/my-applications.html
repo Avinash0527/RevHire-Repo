@@ -1,0 +1,149 @@
+<div class="page-container animate-fade-in">
+    <div class="header-flex">
+        <div>
+            <h1 class="page-title">My Applications</h1>
+            <p class="page-sub">Track the status of all your job applications.</p>
+        </div>
+        <div class="filter-pills">
+            @for (f of filters; track f.id) {
+            <button class="filter-pill" [class.active]="activeFilter() === f.id" (click)="activeFilter.set(f.id)">
+                {{ f.label }}
+                <span class="count-badge">{{ getCount(f.id) }}</span>
+            </button>
+            }
+        </div>
+    </div>
+
+    <div class="apps-container">
+        @if (loading()) {
+        @for (i of [1,2,3]; track i) { <div class="app-skeleton"></div> }
+        } @else if(filteredApps().length === 0) {
+        <div class="empty-state-card">
+            <div class="empty-icon">📁</div>
+            <h3>No applications found</h3>
+            <p>You haven't applied to any jobs that match this status.</p>
+            <a routerLink="/jobs" class="btn-primary-custom">Browse Jobs</a>
+        </div>
+        } @else {
+        <!-- Desktop Table -->
+        <div class="apps-table-card">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Job Title / Company</th>
+                        <th>Applied Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (app of pagedApps(); track app.id) {
+                    <tr>
+                        <td>
+                            <div class="job-cell">
+                                <div class="company-logo-sm">{{ app.companyName.charAt(0) }}</div>
+                                <div>
+                                    <div class="cell-title">{{ app.jobTitle }}</div>
+                                    <div class="cell-sub">{{ app.companyName }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="date-cell">{{ app.appliedAt }}</div>
+                        </td>
+                        <td><app-status-badge [status]="app.status" /></td>
+                        <td>
+                            <div class="action-cell">
+                                <a [routerLink]="['/jobs', app.jobId]" class="icon-btn" title="View Job"><i
+                                        class="bi bi-eye"></i></a>
+                                <a [routerLink]="['/seeker/interview-prep']" [queryParams]="{role: app.jobTitle}"
+                                    class="icon-btn text-primary" title="Interview Prep"><i
+                                        class="bi bi-journal-code"></i></a>
+                                @if (!isWithdrawDisabled(app)) {
+                                <button class="icon-btn text-danger" (click)="openWithdrawModal(app)"
+                                    title="Withdraw Application">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                                } @else if (isRegistrationClosed(app)) {
+                                <span class="registration-closed-msg">Registration closed</span>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile View Cards -->
+        <div class="apps-mobile-grid">
+            @for (app of pagedApps(); track app.id) {
+            <div class="mobile-app-card">
+                <div class="ma-header">
+                    <div class="company-logo-sm">
+                        @if (app.companyLogo) {
+                        <img [src]="app.companyLogo" class="logo-img" [alt]="app.companyName">
+                        } @else {
+                        {{ app.companyName.charAt(0) }}
+                        }
+                    </div>
+                    <app-status-badge [status]="app.status" />
+                </div>
+                <div class="ma-body">
+                    <div class="cell-title">{{ app.jobTitle }}</div>
+                    <div class="cell-sub">{{ app.companyName }}</div>
+                    <div class="ma-meta">Applied on {{ app.appliedAt }}</div>
+                </div>
+                <div class="ma-footer">
+                    <a [routerLink]="['/jobs', app.jobId]" class="btn-text">View Job</a>
+                    <a [routerLink]="['/seeker/interview-prep']" [queryParams]="{role: app.jobTitle}"
+                        class="btn-text text-primary">Prep</a>
+                    @if (!isWithdrawDisabled(app)) {
+                    <button class="btn-text text-danger" (click)="openWithdrawModal(app)">Withdraw</button>
+                    } @else if (isRegistrationClosed(app)) {
+                    <span class="registration-closed-msg">Registration closed</span>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+
+        <div class="pagination-wrapper" style="margin-top: 2rem;">
+            <app-pagination [totalItems]="filteredApps().length" [pageSize]="pageSize" [currentPage]="currentPage()"
+                (pageChange)="currentPage.set($event)">
+            </app-pagination>
+        </div>
+        }
+    </div>
+</div>
+
+<!-- Withdraw Confirmation Modal -->
+@if (showWithdrawModal()) {
+<div class="modal-backdrop animate-fade-in" (click)="closeWithdrawModal()">
+    <div class="modal-content animate-slide-up" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3>Withdraw Application</h3>
+            <button class="btn-close" (click)="closeWithdrawModal()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to withdraw your application for <b>{{ selectedApp()?.jobTitle }}</b> at <b>{{
+                    selectedApp()?.companyName }}</b>?</p>
+
+            <div class="form-group mt-3">
+                <label for="withdrawReason" class="form-label">Reason for withdrawal (Optional)</label>
+                <textarea id="withdrawReason" class="form-control-custom" rows="3" [value]="withdrawReason()"
+                    (input)="withdrawReason.set($any($event.target).value)"
+                    placeholder="Tell us why you're withdrawing..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary-custom" (click)="closeWithdrawModal()"
+                [disabled]="isWithdrawing()">Cancel</button>
+            <button class="btn-danger-custom" (click)="confirmWithdraw()" [disabled]="isWithdrawing()">
+                @if(isWithdrawing()) { <span class="spinner-sm"></span> Withdrawing... }
+                @else { Confirm Withdrawal }
+            </button>
+        </div>
+    </div>
+</div>
+}

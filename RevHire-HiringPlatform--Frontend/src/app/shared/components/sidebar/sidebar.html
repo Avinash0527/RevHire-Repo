@@ -1,0 +1,77 @@
+<aside class="sidebar">
+    <div class="sidebar-inner">
+        @if (auth.isSeeker()) {
+        <div class="sidebar-section-label">Job Seeker</div>
+        <nav class="sidebar-nav">
+            <a routerLink="/seeker/dashboard" routerLinkActive="active" class="sidebar-link">
+                <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+            </a>
+            <a routerLink="/seeker/profile" routerLinkActive="active" class="sidebar-link">
+                <i class="bi bi-person-circle"></i><span>My Profile</span>
+            </a>
+            <a routerLink="/seeker/resume-builder" routerLinkActive="active" class="sidebar-link">
+                <i class="bi bi-file-earmark-text"></i><span>Resume Builder</span>
+            </a>
+            <a routerLink="/seeker/applications" routerLinkActive="active" class="sidebar-link">
+                <i class="bi bi-send-check"></i><span>My Applications</span>
+            </a>
+            <a routerLink="/seeker/interview-prep" routerLinkActive="active" class="sidebar-link">
+                <i class="bi bi-journal-code"></i><span>Interview Prep</span>
+            </a>
+            <a routerLink="/seeker/saved-jobs" routerLinkActive="active" class="sidebar-link">
+                <i class="bi bi-bookmark-heart"></i><span>Saved Jobs</span>
+            </a>
+            <a routerLink="/seeker/notifications" routerLinkActive="active" class="sidebar-link">
+                <i class="bi bi-bell"></i><span>Notifications</span>
+            </a>
+        </nav>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section-label">Discover</div>
+        <nav class="sidebar-nav">
+            <a routerLink="/jobs" routerLinkActive="active" class="sidebar-link">
+                <i class="bi bi-search"></i><span>Browse Jobs</span>
+            </a>
+        </nav>
+        }
+
+        @if (auth.isEmployer()) {
+        <div class="sidebar-section-label">Employer</div>
+        <nav class="sidebar-nav">
+            <a routerLink="/employer/dashboard" routerLinkActive="active" class="sidebar-link">
+                <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+            </a>
+            <a routerLink="/employer/post-job" routerLinkActive="active" class="sidebar-link highlight">
+                <i class="bi bi-plus-circle"></i><span>Post a Job</span>
+            </a>
+            <a routerLink="/employer/jobs" routerLinkActive="active" class="sidebar-link">
+                <i class="bi bi-briefcase"></i><span>Manage Jobs</span>
+            </a>
+            <a routerLink="/employer/applicants" routerLinkActive="active" class="sidebar-link">
+                <i class="bi bi-people"></i><span>Applicants</span>
+            </a>
+            <a routerLink="/employer/saved-resumes" routerLinkActive="active" class="sidebar-link">
+                <i class="bi bi-bookmark-star"></i><span>Saved Resumes</span>
+            </a>
+            <a routerLink="/employer/company" routerLinkActive="active" class="sidebar-link">
+                <i class="bi bi-building"></i><span>Company Profile</span>
+            </a>
+            <a routerLink="/employer/notifications" routerLinkActive="active" class="sidebar-link">
+                <i class="bi bi-bell"></i><span>Notifications</span>
+            </a>
+        </nav>
+        }
+
+        <!-- User info at bottom -->
+        <div class="sidebar-user">
+            <div class="avatar" style="width:36px;height:36px;font-size:0.9rem">{{ auth.currentUser()?.name?.charAt(0)
+                }}</div>
+            <div class="user-info">
+                <div class="user-name">{{ auth.currentUser()?.name }}</div>
+                <div class="user-role">{{ auth.currentUser()?.role }}</div>
+            </div>
+            <button class="logout-btn" (click)="auth.logout()" title="Logout">
+                <i class="bi bi-box-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+</aside>

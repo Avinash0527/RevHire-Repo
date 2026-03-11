@@ -1,0 +1,52 @@
+<div class="page-container animate-fade-in">
+    <div class="greeting-bar">
+        <div>
+            <h1 class="greeting-title">Notifications</h1>
+            <p class="greeting-sub">Stay updated with your job applications and activity.</p>
+        </div>
+        <div class="header-actions" style="display: flex; gap: 1rem; align-items: center;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                <input type="checkbox" [checked]="showUnreadOnly()" (change)="showUnreadOnly.set(!showUnreadOnly())">
+                <span>Show Unread Only</span>
+            </label>
+            <button class="btn-outline-custom me-2" (click)="refresh()"><i class="bi bi-refresh"></i> Refresh</button>
+            <button class="btn-primary-custom" (click)="markAllRead()">Mark all as read</button>
+        </div>
+    </div>
+
+    <div class="notif-container">
+        @if (notifService.loading()) {
+        @for (i of [1,2,3]; track i) { <div class="notif-skeleton"></div> }
+        } @else if(notifService.notifications().length === 0) {
+        <div class="empty-state-card">
+            <div class="empty-icon">🔔</div>
+            <h3>All caught up!</h3>
+            <p>You have no notifications yet.</p>
+        </div>
+        } @else {
+        <div class="notif-list">
+            @for (n of pagedNotifications(); track n.id) {
+            <div class="notif-item" [class.unread]="!n.isRead" (click)="markRead(n.id)">
+                <div class="notif-icon-wrap" [ngClass]="(n.type || 'info').toLowerCase()">
+                    <i class="bi" [ngClass]="getIcon(n.type || 'info')"></i>
+                </div>
+                <div class="notif-content">
+                    <div class="notif-header">
+                        <span class="notif-title">{{ n.title || 'Update' }}</span>
+                        <span class="notif-time">{{ n.createdAt | date:'medium' }}</span>
+                    </div>
+                    <p class="notif-msg">{{ n.message || 'No details provided' }}</p>
+                </div>
+                @if (!n.isRead) { <div class="unread-dot"></div> }
+            </div>
+            }
+        </div>
+
+        <div class="pagination-wrapper" style="margin-top: 2rem;">
+            <app-pagination [totalItems]="filteredNotifications().length" [pageSize]="pageSize"
+                [currentPage]="currentPage()" (pageChange)="currentPage.set($event)">
+            </app-pagination>
+        </div>
+        }
+    </div>
+</div>

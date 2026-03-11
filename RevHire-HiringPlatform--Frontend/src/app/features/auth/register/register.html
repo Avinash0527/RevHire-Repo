@@ -1,0 +1,126 @@
+<div class="auth-page">
+    <div class="auth-left">
+        <div class="auth-left-content">
+            <a routerLink="/" class="auth-brand">⚡ Rev<span>Hire</span></a>
+            <h2>Launch Your Career<br>With Confidence</h2>
+            <p>Create your free account and get instant access to thousands of job opportunities.</p>
+            <div class="perks">
+                @for (p of perks; track p) { <div class="perk">✓ {{ p }}</div> }
+            </div>
+        </div>
+    </div>
+    <div class="auth-right">
+        <div class="auth-form-card">
+            <div class="auth-header">
+                <h1>Create Account</h1>
+                <p>Join 500,000+ professionals on RevHire</p>
+            </div>
+
+            <!-- Role toggle -->
+            <div class="role-toggle" style="margin-bottom:1.5rem">
+                <button class="role-btn" [class.active]="selectedRole() === 'JOB_SEEKER'"
+                    (click)="selectedRole.set('JOB_SEEKER')">
+                    <i class="bi bi-person-circle"></i> Job Seeker
+                </button>
+                <button class="role-btn" [class.active]="selectedRole() === 'EMPLOYER'"
+                    (click)="selectedRole.set('EMPLOYER')">
+                    <i class="bi bi-building"></i> Employer
+                </button>
+            </div>
+
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                <!-- Step 1: Email Verification -->
+                @if (verificationStep() === 'EMAIL') {
+                <div class="form-group">
+                    <label class="form-label-custom">Email Address</label>
+                    <input formControlName="email" type="email" class="form-control-custom"
+                        placeholder="you@example.com" [ngClass]="{'is-invalid': submitted && f['email'].errors}">
+                    @if (submitted && f['email'].errors?.['required']) { <div class="field-error">Email is required</div> }
+                    @if (submitted && f['email'].errors?.['email']) { <div class="field-error">Enter valid email</div> }
+                </div>
+                <button type="button" class="btn-submit" (click)="onSendOtp()" [disabled]="loading">
+                    @if (loading) { <span class="spinner-sm"></span> Sending... }
+                    @else { Verify Email <i class="bi bi-envelope-check"></i> }
+                </button>
+                }
+
+                <!-- Step 2: OTP Verification -->
+                @if (verificationStep() === 'OTP') {
+                <div class="form-group">
+                    <label class="form-label-custom">Enter 6-Digit OTP</label>
+                    <p class="text-muted small">Sent to {{ f['email'].value }}</p>
+                    <input #otpInput type="text" class="form-control-custom" placeholder="000000" maxlength="6"
+                        style="text-align: center; letter-spacing: 0.5rem; font-size: 1.5rem;">
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn-submit" (click)="onVerifyOtp(otpInput.value)" [disabled]="loading">
+                        @if (loading) { <span class="spinner-sm"></span> Verifying... }
+                        @else { Confirm OTP <i class="bi bi-check-circle"></i> }
+                    </button>
+                    <button type="button" class="btn-outline-custom" (click)="verificationStep.set('EMAIL')">Back</button>
+                </div>
+                }
+
+                <!-- Step 3: Registration Details -->
+                @if (verificationStep() === 'DETAILS') {
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label-custom">Full Name</label>
+                        <input formControlName="name" type="text" class="form-control-custom" placeholder="John Doe"
+                            [ngClass]="{'is-invalid': submitted && f['name'].errors}">
+                        @if (submitted && f['name'].errors?.['required']) { <div class="field-error">Name is required</div> }
+                    </div>
+                </div>
+
+                @if (selectedRole() === 'EMPLOYER') {
+                <div class="form-group">
+                    <label class="form-label-custom">Company Name</label>
+                    <input formControlName="companyName" type="text" class="form-control-custom"
+                        placeholder="e.g. Acme Corp" [ngClass]="{'is-invalid': submitted && f['companyName'].errors}">
+                    @if (submitted && f['companyName'].errors?.['required']) { <div class="field-error">Company name is required</div> }
+                </div>
+                }
+
+                <div class="form-group">
+                    <label class="form-label-custom">Password</label>
+                    <div class="password-field">
+                        <input formControlName="password" [type]="showPwd ? 'text' : 'password'"
+                            class="form-control-custom" placeholder="At least 8 characters"
+                            [ngClass]="{'is-invalid': submitted && f['password'].errors}">
+                        <button type="button" class="pwd-toggle" (click)="showPwd = !showPwd">
+                            <i class="bi" [ngClass]="showPwd ? 'bi-eye-slash' : 'bi-eye'"></i>
+                        </button>
+                    </div>
+                    @if (submitted && f['password'].errors?.['required']) { <div class="field-error">Password is required</div> }
+                    @if (submitted && f['password'].errors?.['minlength']) { <div class="field-error">Minimum 8 characters</div> }
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label-custom">Confirm Password</label>
+                    <input formControlName="confirmPassword" type="password" class="form-control-custom"
+                        placeholder="Re-enter password"
+                        [ngClass]="{'is-invalid': submitted && registerForm.errors?.['mismatch']}">
+                    @if (submitted && registerForm.errors?.['mismatch']) { <div class="field-error">Passwords don't match</div> }
+                </div>
+
+                <div class="terms">
+                    <input type="checkbox" formControlName="terms" id="terms">
+                    <label for="terms">I agree to the <a href="#" class="terms-link">Terms of Service</a> and <a
+                            href="#" class="terms-link">Privacy Policy</a></label>
+                </div>
+                @if (submitted && f['terms'].errors?.['required']) { <div class="field-error">You must agree to the terms</div> }
+
+                <button type="submit" class="btn-submit" [disabled]="loading">
+                    @if (loading) { <span class="spinner-sm"></span> Creating account... }
+                    @else { Create Free Account <i class="bi bi-arrow-right"></i> }
+                </button>
+                }
+
+                @if (errorMsg) { <div class="form-error">{{ errorMsg }}</div> }
+            </form>
+
+
+            <p class="auth-switch">Already have an account? <a routerLink="/login">Sign in →</a></p>
+        </div>
+    </div>
+</div>

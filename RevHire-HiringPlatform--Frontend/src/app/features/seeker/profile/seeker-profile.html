@@ -1,0 +1,321 @@
+<div class="page-container animate-fade-in">
+  <div class="profile-header">
+    <h1 class="page-title">Personal Profile</h1>
+    <p class="page-sub">Manage your personal information and account settings.</p>
+  </div>
+
+  <div class="profile-layout">
+    <div class="profile-sidebar">
+      <div class="profile-card avatar-card">
+        <div class="avatar-upload">
+          <div class="avatar-large">
+            @if (avatarPreview()) {
+            <img [src]="avatarPreview()!" alt="Profile image" class="avatar-img">
+            } @else {
+            {{ auth.currentUser()?.name?.charAt(0) }}
+            }
+          </div>
+          <input #avatarInput type="file" hidden accept="image/*" (change)="onAvatarSelected($event)">
+          <button type="button" class="edit-avatar-btn" (click)="avatarInput.click()"><i class="bi bi-camera"></i></button>
+        </div>
+        @if (avatarPreview()) {
+        <div class="avatar-actions">
+          <button type="button" class="avatar-action-btn danger" (click)="removeProfileImage()">Remove Image</button>
+        </div>
+        }
+        <h2 class="profile-name">{{ auth.currentUser()?.name }}</h2>
+        <p class="profile-email">{{ auth.currentUser()?.email }}</p>
+        <div class="profile-role-badge seeker">Job Seeker</div>
+      </div>
+
+      <div class="profile-card nav-card">
+        <button class="profile-nav-btn" [class.active]="activeTab() === 'personal'" (click)="activeTab.set('personal')">
+          <i class="bi bi-person"></i> Personal Info
+        </button>
+        <button class="profile-nav-btn" [class.active]="activeTab() === 'security'" (click)="activeTab.set('security')">
+          <i class="bi bi-shield-lock"></i> Security
+        </button>
+        <button class="profile-nav-btn" [class.active]="activeTab() === 'notifications'"
+          (click)="activeTab.set('notifications')">
+          <i class="bi bi-bell"></i> Notifications
+        </button>
+        <button class="profile-nav-btn text-danger" [class.active]="activeTab() === 'delete'"
+          (click)="activeTab.set('delete')">
+          <i class="bi bi-trash"></i> Delete Account
+        </button>
+      </div>
+    </div>
+
+    <div class="profile-main">
+      @if (activeTab() === 'personal') {
+      <!-- Personal Information Card -->
+      <div class="profile-card animate-fade-in">
+        <div class="card-header-flex">
+          <h2 class="card-title">Personal Information</h2>
+          <button class="btn-primary-custom" (click)="saveProfile()" [disabled]="saving()">
+            @if (saving()) { <span class="spinner-sm"></span> Saving... }
+            @else { Save Changes }
+          </button>
+        </div>
+
+        <form [formGroup]="profileForm" class="profile-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label-custom">Full Name</label>
+              <input formControlName="name" type="text" class="form-control-custom"
+                [ngClass]="{'is-invalid': f['name'].errors && f['name'].touched}">
+              @if (f['name'].errors?.['required'] && f['name'].touched) { <div class="field-error">Name is required
+              </div> }
+            </div>
+            <div class="form-group">
+              <label class="form-label-custom">Email Address</label>
+              <input formControlName="email" type="email" class="form-control-custom"
+                [ngClass]="{'is-invalid': f['email'].errors && f['email'].touched}">
+              @if (f['email'].errors?.['required'] && f['email'].touched) { <div class="field-error">Email is required</div> }
+              @if (f['email'].errors?.['email'] && f['email'].touched) { <div class="field-error">Enter a valid email address</div> }
+            </div>
+            <div class="form-group">
+              <label class="form-label-custom">Phone Number</label>
+              <input formControlName="phone" type="tel" class="form-control-custom" placeholder="9876543210"
+                maxlength="10" inputmode="numeric" [ngClass]="{'is-invalid': f['phone'].errors && f['phone'].touched}">
+              @if (f['phone'].errors?.['pattern'] && f['phone'].touched) { <div class="field-error">Phone must be exactly 10 digits</div> }
+            </div>
+            <div class="form-group">
+              <label class="form-label-custom">Location</label>
+              <input formControlName="location" type="text" class="form-control-custom" placeholder="City, Country">
+            </div>
+          </div>
+
+          <div class="form-group mt-3">
+            <label class="form-label-custom">Professional Summary / Bio</label>
+            <textarea formControlName="bio" class="form-control-custom" rows="4"
+              placeholder="Briefly describe your professional background and what you're looking for..."></textarea>
+          </div>
+        </form>
+      </div>
+
+      <!-- Skills Management Card -->
+      <div class="profile-card animate-fade-in">
+        <h2 class="card-title mb-3">Skills</h2>
+        <p class="skills-hint">Type a skill and press Enter to add. Click × to remove.</p>
+        <div class="skills-input-wrapper">
+          <div class="skill-input-row">
+            <button type="button" class="skill-add-btn" (click)="addSkill(skillInput)" aria-label="Add skill">
+              <i class="bi bi-plus-circle skill-add-icon"></i>
+            </button>
+            <input #skillInput type="text" class="form-control-custom skill-input"
+              placeholder="e.g. Java, React, Python, Machine Learning…" (keyup.enter)="addSkill(skillInput)">
+          </div>
+          <div class="skills-list-edit mt-2">
+            @for (skill of skills(); track skill) {
+            <span class="skill-pill-edit">
+              {{ skill }}
+              <button type="button" class="remove-skill" (click)="removeSkill(skill)">&times;</button>
+            </span>
+            }
+            @if (skills().length === 0) {
+            <span class="no-skills-msg">No skills added yet. Start typing above to add your skills.</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Resume Upload Card -->
+      <div class="profile-card animate-fade-in">
+        <h2 class="card-title mb-3">Resume Upload</h2>
+        <p class="skills-hint">Upload your resume to let employers see your latest qualifications. Accepted: PDF, DOC,
+          DOCX.</p>
+
+        <!-- Drop Zone -->
+        <input type="file" #fileInput hidden (change)="onFileSelected($event)" accept=".pdf,.doc,.docx">
+        <div class="drop-zone" (dragover)="$event.preventDefault(); dragActive.set(true)"
+          (dragleave)="dragActive.set(false)"
+          (drop)="$event.preventDefault(); dragActive.set(false); handleDrop($event)" [class.drag-active]="dragActive()"
+          (click)="fileInput.click()">
+          @if (uploadProgress() > 0 && uploadProgress() < 100) { <div class="upload-progress-wrap">
+            <div class="upload-progress-bar">
+              <div class="upload-fill" [style.width]="uploadProgress() + '%'"></div>
+            </div>
+            <div class="upload-pct">{{ uploadProgress() }}%</div>
+        </div>
+        } @else if(uploadedFile()) {
+        <div class="uploaded-file-indicator">
+          <i class="bi bi-file-earmark-check-fill"></i>
+          <div>
+            <div class="uploaded-name">{{ uploadedFile() }}</div>
+            <div class="uploaded-size">Uploaded and saved on this device</div>
+          </div>
+          <button type="button" class="btn-reupload-file" (click)="$event.stopPropagation(); fileInput.click()">Upload another</button>
+          <button class="btn-remove-file" (click)="$event.stopPropagation(); removeFile()"><i
+              class="bi bi-trash"></i></button>
+        </div>
+        } @else {
+        <i class="bi bi-cloud-arrow-up-fill drop-icon"></i>
+        <div class="drop-text">Drag & drop your resume here</div>
+        <div class="drop-or">or click to browse files</div>
+        }
+      </div>
+
+      <!-- Extracted Text Preview -->
+      @if (extractedText()) {
+      <div class="extracted-panel animate-fade-in">
+        <div class="extracted-header">
+          <i class="bi bi-file-earmark-text"></i> Extracted Resume Text (Preview)
+        </div>
+        <div class="extracted-body">
+          <p>{{ extractedText() }}</p>
+        </div>
+      </div>
+      }
+    </div>
+    } @else if(activeTab() === 'security') {
+    <!-- Security / Password Card -->
+    <div class="profile-card animate-fade-in">
+      <div class="card-header-flex">
+        <h2 class="card-title">Security & Password</h2>
+        <button class="btn-primary-custom" (click)="changePassword()" [disabled]="saving()">
+          @if (saving()) { <span class="spinner-sm"></span> Updating... }
+          @else { Update Password }
+        </button>
+      </div>
+      <p class="skills-hint">Ensure your account is using a long, random password to stay secure.</p>
+
+      <form [formGroup]="securityForm" class="profile-form mt-4">
+        <div class="form-group mb-3">
+          <label class="form-label-custom">Current Password</label>
+          <div class="password-field">
+            <input formControlName="oldPassword" [type]="showOldPassword() ? 'text' : 'password'" class="form-control-custom">
+            <button type="button" class="pwd-toggle-btn" (click)="showOldPassword.set(!showOldPassword())"
+              [attr.aria-label]="showOldPassword() ? 'Hide password' : 'Show password'">
+              <i class="bi" [ngClass]="showOldPassword() ? 'bi-eye-slash' : 'bi-eye'"></i>
+            </button>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label-custom">New Password</label>
+            <div class="password-field">
+              <input formControlName="newPassword" [type]="showNewPassword() ? 'text' : 'password'" class="form-control-custom">
+              <button type="button" class="pwd-toggle-btn" (click)="showNewPassword.set(!showNewPassword())"
+                [attr.aria-label]="showNewPassword() ? 'Hide password' : 'Show password'">
+                <i class="bi" [ngClass]="showNewPassword() ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </button>
+            </div>
+            @if (sf['newPassword'].errors?.['minlength'] && sf['newPassword'].touched) {
+            <div class="field-error">Min 8 characters required</div>
+            }
+          </div>
+          <div class="form-group">
+            <label class="form-label-custom">Confirm New Password</label>
+            <div class="password-field">
+              <input formControlName="confirmPassword" [type]="showConfirmPassword() ? 'text' : 'password'" class="form-control-custom">
+              <button type="button" class="pwd-toggle-btn" (click)="showConfirmPassword.set(!showConfirmPassword())"
+                [attr.aria-label]="showConfirmPassword() ? 'Hide password' : 'Show password'">
+                <i class="bi" [ngClass]="showConfirmPassword() ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </button>
+            </div>
+            @if (isPasswordMismatch()) {
+            <div class="field-error">Does not match</div>
+            }
+          </div>
+        </div>
+      </form>
+    </div>
+    } @else if(activeTab() === 'notifications') {
+    <!-- Notifications Card -->
+    <div class="profile-card animate-fade-in">
+      <div class="card-header-flex">
+        <h2 class="card-title">Notification Settings</h2>
+      </div>
+      <p class="skills-hint">Manage how you receive alerts about job applications and new opportunities.</p>
+
+      <div class="notif-settings-list mt-4">
+        <div class="notif-setting-item">
+          <div class="setting-info">
+            <div class="setting-title">Job Application Updates</div>
+            <div class="setting-desc">Get notified when an employer reviews or updates your application status.</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div class="notif-setting-item">
+          <div class="setting-info">
+            <div class="setting-title">New Job Recommendations</div>
+            <div class="setting-desc">Daily summary of jobs that match your skills and preferences.</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div class="notif-setting-item">
+          <div class="setting-info">
+            <div class="setting-title">Platform Announcements</div>
+            <div class="setting-desc">Stay updated with new features and community news.</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox">
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+    } @else if(activeTab() === 'delete') {
+    <!-- Delete Account Card -->
+    <div class="profile-card animate-fade-in danger-border">
+      <h2 class="card-title text-danger">Delete Account</h2>
+      <p class="mt-3">Once you delete your account, there is no going back. Please be certain.</p>
+
+      <div class="delete-warning-box mt-4">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div>
+          <strong>What happens when you delete:</strong>
+          <ul>
+            <li>All your ongoing applications will be cancelled.</li>
+            <li>Your resume and profile data will be permanently removed.</li>
+            <li>Employers will no longer be able to see your profile.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <button class="btn-danger-custom" (click)="deleteAccount()">
+          Delete My Account Forever
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Account Deletion Modal -->
+  @if (showDeleteModal()) {
+  <div class="modal-overlay animate-fade-in" (click)="closeDeleteModal()">
+    <div class="modal-box animate-scale-up" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title text-danger">
+          <i class="bi bi-exclamation-octagon-fill me-2"></i>
+          Delete Account Forever?
+        </h3>
+        <button class="modal-close" (click)="closeDeleteModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>This action is <strong>irreversible</strong>. You will lose access to all your applications, saved jobs, and
+          profile data immediately.</p>
+        <div class="modal-confirm-text">
+          Type "DELETE" to confirm (Optional/Visual only for now)
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary-custom" (click)="closeDeleteModal()">Cancel, Keep Account</button>
+        <button class="btn-danger-custom" (click)="confirmDelete()">
+          <i class="bi bi-trash-fill me-1"></i>
+          Yes, Delete My Account
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+</div>
+</div>

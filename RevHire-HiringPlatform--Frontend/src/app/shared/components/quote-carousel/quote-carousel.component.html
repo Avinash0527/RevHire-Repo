@@ -1,0 +1,15 @@
+<div class="carousel-container">
+    <div class="carousel-track">
+        @for (quote of quotes; track quote.id) {
+        <div class="quote-item">
+            <span class="quote-text">"{{ quote.text }}"</span>
+        </div>
+        }
+        <!-- Duplicate array for seamless infinite scroll -->
+        @for (quote of quotes; track quote.id + '-dup') {
+        <div class="quote-item" aria-hidden="true">
+            <span class="quote-text">"{{ quote.text }}"</span>
+        </div>
+        }
+    </div>
+</div>

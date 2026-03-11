@@ -1,0 +1,59 @@
+.carousel-container {
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0;
+    right: 0;
+    height: var(--carousel-height);
+    width: 100%;
+    overflow: hidden;
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    position: fixed;
+    /* Need strictly this context */
+    z-index: 990;
+    display: flex;
+    align-items: center;
+}
+
+.carousel-track {
+    display: flex;
+    width: max-content;
+    animation: scroll 60s linear infinite;
+}
+
+.carousel-container:hover .carousel-track {
+    animation-play-state: paused;
+}
+
+.quote-item {
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    white-space: nowrap;
+    border-right: 1px solid var(--border-color);
+}
+
+.quote-text {
+    font-size: 0.95rem;
+    color: var(--text-color);
+    font-style: italic;
+    margin-right: 10px;
+}
+
+.quote-author {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Duplicated quotes for seamless loop */
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(calc(-50%));
+        /* Assumes the content is duplicated exactly once */
+    }
+}

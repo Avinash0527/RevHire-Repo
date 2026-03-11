@@ -1,0 +1,116 @@
+<div class="page-container animate-fade-in">
+    <div class="greeting-bar">
+        <div>
+            <h1 class="greeting-title">Employer Dashboard</h1>
+            <p class="greeting-sub">Manage your job postings and applicants efficiently.</p>
+        </div>
+        <div class="header-actions">
+            <a routerLink="/employer/post-job" class="btn-primary-custom">
+                <i class="bi bi-plus-lg"></i> Post New Job
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        @for (stat of stats(); track stat.label) {
+        <div class="stat-card">
+            <div class="stat-icon" [style.background]="stat.bg">
+                <i class="bi" [ngClass]="stat.icon" [style.color]="stat.color"></i>
+            </div>
+            <div>
+                <div class="stat-value">{{ stat.value }}</div>
+                <div class="stat-label">{{ stat.label }}</div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- Active Jobs -->
+        <div class="dash-card">
+            <div class="section-header">
+                <h2>Active Job Postings</h2>
+                <a routerLink="/employer/jobs" class="see-all">View All <i class="bi bi-arrow-right"></i></a>
+            </div>
+            @if (activeJobs().length === 0) {
+            <div class="empty-state-sm">
+                <i class="bi bi-briefcase" style="font-size:2rem;color:var(--color-text-muted)"></i>
+                <p>No active jobs. <a routerLink="/employer/post-job">Post your first job!</a></p>
+            </div>
+            } @else {
+            <div class="job-list-sm">
+                @for (job of activeJobs(); track job.id) {
+                <div class="job-item-sm">
+                    <div class="job-info-sm">
+                        <div class="job-title-sm">{{ job.title }}</div>
+                        <div class="job-meta-sm">Posted on {{ job.postedDate }} · {{ job.location }}</div>
+                    </div>
+                    <div class="job-stats-sm">
+                        <div class="js-stat"><b>{{ job.openings || '?' }}</b> <span>Openings</span></div>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </div>
+
+        <!-- Recent Applications -->
+        <div class="dash-card">
+            <div class="section-header">
+                <h2>Latest Applicants</h2>
+                <a routerLink="/employer/applicants" class="see-all">Review All <i class="bi bi-arrow-right"></i></a>
+            </div>
+            @if (recentApplicants().length === 0) {
+            <div class="empty-state-sm">
+                <i class="bi bi-people" style="font-size:2rem;color:var(--color-text-muted)"></i>
+                <p>No applications received yet.</p>
+            </div>
+            } @else {
+            <div class="applicant-list-sm">
+                @for (app of recentApplicants(); track app.id) {
+                <div class="applicant-item-sm">
+                    <div class="applicant-info-sm">
+                        <div class="applicant-name-sm">{{ app.jobSeekerName }}</div>
+                        <div class="applicant-job-sm">Applied for {{ app.jobTitle }}</div>
+                    </div>
+                    <app-status-badge [status]="app.status" />
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="dash-card mt-4">
+        <h2 class="card-title mb-3">Quick Actions</h2>
+        <div class="quick-actions-grid">
+            <a routerLink="/employer/post-job" class="qa-item">
+                <div class="qa-icon" style="background:rgba(79,70,229,0.1); color:#4F46E5"><i
+                        class="bi bi-megaphone"></i></div>
+                <span>Post a Job</span>
+            </a>
+            <a routerLink="/employer/jobs" class="qa-item">
+                <div class="qa-icon" style="background:rgba(16,185,129,0.1); color:#10B981"><i
+                        class="bi bi-list-task"></i></div>
+                <span>Manage Jobs</span>
+            </a>
+            <a routerLink="/employer/applicants" class="qa-item">
+                <div class="qa-icon" style="background:rgba(251,191,36,0.1); color:#d97706"><i class="bi bi-people"></i>
+                </div>
+                <span>Review Applicants</span>
+            </a>
+            <a routerLink="/employer/saved-resumes" class="qa-item">
+                <div class="qa-icon" style="background:rgba(245,158,11,0.1); color:#d97706"><i
+                        class="bi bi-bookmark-star"></i></div>
+                <span>Saved Resumes</span>
+            </a>
+            <a routerLink="/employer/company" class="qa-item">
+                <div class="qa-icon" style="background:rgba(139,92,246,0.1); color:#7c3aed"><i
+                        class="bi bi-building"></i></div>
+                <span>Company Profile</span>
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,211 @@
+<nav class="navbar-custom">
+    <div class="navbar-inner">
+        <!-- Brand -->
+        <a routerLink="/" class="brand">
+            <span class="brand-icon"><img src="favicon.ico" alt=""></span>
+            <span class="brand-text">Rev<span class="brand-accent">Hire</span></span>
+        </a>
+
+        <!-- Center Nav (desktop) -->
+        <div class="nav-links">
+            @if (!auth.isAuthenticated()) {
+            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}"
+                class="nav-link">Home</a>
+            }
+            <a routerLink="/jobs" routerLinkActive="active" class="nav-link">Jobs</a>
+            @if (auth.isSeeker()) {
+            <a routerLink="/seeker/dashboard" routerLinkActive="active" class="nav-link">Dashboard</a>
+            <a routerLink="/seeker/applications" routerLinkActive="active" class="nav-link">Applications</a>
+            <a routerLink="/seeker/interview-prep" routerLinkActive="active" class="nav-link">Prep</a>
+            }
+            @if (auth.isEmployer()) {
+            <a routerLink="/employer/dashboard" routerLinkActive="active" class="nav-link">Dashboard</a>
+            <a routerLink="/employer/post-job" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+                class="nav-link post-job-link">Post a Job</a>
+            }
+        </div>
+
+        <!-- Right side -->
+        <div class="nav-actions">
+            <!-- Search -->
+            <div class="search-wrapper" (mouseleave)="searchExpanded() && !searchQuery() && toggleSearch()">
+                <div class="search-container" [class.expanded]="searchExpanded()">
+                    <input type="text" class="search-input" placeholder="Search..." [ngModel]="searchQuery()"
+                        (ngModelChange)="onSearchInput($event)" (keyup.enter)="submitSearch()"
+                        (focus)="searchExpanded.set(true)" #searchInput>
+                    <button class="search-btn" (click)="onSearchButtonClick()">
+                        <i class="bi" [class.bi-search]="!searchExpanded()" [class.bi-x-lg]="searchExpanded()"></i>
+                    </button>
+                </div>
+
+                @if (searchExpanded() && searchQuery()) {
+                <div class="search-results-dropdown">
+                    @if (isSearching()) {
+                    <div class="search-loading">
+                        <i class="bi bi-arrow-repeat rotate"></i> Searching...
+                    </div>
+                    } @else if (searchResults().length === 0) {
+                    <div class="no-results">
+                        <i class="bi bi-search"></i> No matches found
+                    </div>
+                    } @else {
+                    @for (res of searchResults(); track res.id) {
+                    <div class="search-result-item" (click)="navigateSearchResult(res)">
+                        <div class="result-icon">
+                            @if (auth.isSeeker()) {
+                            <i class="bi bi-briefcase"></i>
+                            } @else {
+                            <i class="bi bi-person-circle"></i>
+                            }
+                        </div>
+                        <div class="result-info">
+                            <div class="result-title">{{ res.title }}</div>
+                            <div class="result-subtitle">
+                                {{ res.companyName || res.headline || res.email }}
+                                @if (res.location) {
+                                <span class="result-meta"><i class="bi bi-geo-alt"></i> {{ res.location }}</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    }
+                    }
+                </div>
+                }
+            </div>
+
+            <!-- Theme toggle -->
+            <button class="icon-btn" (click)="themeService.toggle()"
+                [title]="themeService.isDark() ? 'Light Mode' : 'Dark Mode'">
+                @if (themeService.isDark()) { <i class="bi bi-sun-fill"></i> }
+                @else { <i class="bi bi-moon-fill"></i> }
+            </button>
+
+            @if (auth.isAuthenticated()) {
+            <!-- Notifications -->
+            <div class="user-menu-wrapper" (mouseleave)="notifMenuOpen.set(false)">
+                <button class="icon-btn notif-btn" (click)="toggleNotifMenu($event)">
+                    <i class="bi bi-bell-fill"></i>
+                    @if (notifService.unreadCount() > 0) {
+                    <span class="notif-badge">{{ notifService.unreadCount() > 9 ? '9+' : notifService.unreadCount()
+                        }}</span>
+                    }
+                </button>
+
+                @if (notifMenuOpen()) {
+                <div class="notif-dropdown">
+                    <div class="notif-dropdown-header">
+                        <span class="fw-600">Notifications</span>
+                        <span class="unread-count" *ngIf="notifService.unreadCount() > 0">
+                            {{ notifService.unreadCount() }} unread
+                        </span>
+                    </div>
+
+                    <div class="notif-dropdown-body">
+                        @if (recentNotifications().length === 0) {
+                        <div class="empty-notif">
+                            <i class="bi bi-bell-slash"></i>
+                            <p>No notifications yet</p>
+                        </div>
+                        } @else {
+                        @for (n of recentNotifications(); track n.id) {
+                        <div class="notif-dropdown-item" [class.unread]="!n.isRead" (click)="markAsReadAndNavigate(n)">
+                            <div class="notif-dot" *ngIf="!n.isRead"></div>
+                            <div class="notif-item-content">
+                                <div class="notif-item-title">{{ n.title || 'Notification' }}</div>
+                                <div class="notif-item-msg">{{ n.message }}</div>
+                                <div class="notif-item-time">{{ n.createdAt | date:'shortTime' }}</div>
+                            </div>
+                        </div>
+                        }
+                        }
+                    </div>
+
+                    <div class="notif-dropdown-footer">
+                        <button class="view-all-btn" (click)="viewAll()">
+                            See All Notifications <i class="bi bi-arrow-right-short"></i>
+                        </button>
+                    </div>
+                </div>
+                }
+            </div>
+
+            <!-- User menu -->
+            <div class="user-menu-wrapper" (mouseenter)="menuOpen.set(true)" (mouseleave)="menuOpen.set(false)">
+                <button class="user-btn">
+                    <div class="avatar">{{ auth.currentUser()?.name?.charAt(0) }}</div>
+                    <span class="user-name">{{ firstName() }}</span>
+                    <i class="bi bi-chevron-down" style="font-size:0.7rem"></i>
+                </button>
+                @if (menuOpen()) {
+                <div class="user-dropdown">
+                    <div class="dropdown-header">
+                        <div class="avatar lg">{{ auth.currentUser()?.name?.charAt(0) }}</div>
+                        <div>
+                            <div class="fw-600">{{ auth.currentUser()?.name }}</div>
+                            <div class="text-muted" style="font-size:0.75rem">{{ auth.currentUser()?.email }}</div>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    @if (auth.isSeeker()) {
+                    <a routerLink="/seeker/profile" class="dropdown-item"><i class="bi bi-person"></i> My Profile</a>
+                    <a routerLink="/seeker/resume-builder" class="dropdown-item"><i class="bi bi-file-earmark-text"></i>
+                        Resume Builder</a>
+                    <a routerLink="/seeker/saved-jobs" class="dropdown-item"><i class="bi bi-bookmark"></i> Saved
+                        Jobs</a>
+                    }
+                    @if (auth.isAdmin()) {
+                    <a routerLink="/admin/dashboard" class="dropdown-item"><i class="bi bi-shield-lock"></i> Admin
+                        Panel</a>
+                    }
+                    @if (auth.isEmployer()) {
+                    <a routerLink="/employer/company" class="dropdown-item"><i class="bi bi-building"></i> Company
+                        Profile</a>
+                    <a routerLink="/employer/jobs" class="dropdown-item"><i class="bi bi-briefcase"></i> Manage Jobs</a>
+                    }
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item danger" (click)="auth.logout()"><i class="bi bi-box-arrow-right"></i>
+                        Logout</button>
+                </div>
+                }
+            </div>
+            } @else {
+            <a routerLink="/login" class="btn-outline-nav">Login</a>
+            <a routerLink="/register" class="btn-fill-nav">Get Started</a>
+            }
+
+            <!-- Mobile menu toggle -->
+            <button class="mobile-toggle" (click)="mobileOpen.set(!mobileOpen())">
+                <i class="bi" [ngClass]="mobileOpen() ? 'bi-x-lg' : 'bi-list'"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile menu -->
+    @if (mobileOpen()) {
+    <div class="mobile-menu">
+        @if (!auth.isAuthenticated()) {
+        <a routerLink="/" class="mobile-link" (click)="mobileOpen.set(false)">Home</a>
+        }
+        <a routerLink="/jobs" class="mobile-link" (click)="mobileOpen.set(false)">Browse Jobs</a>
+        @if (auth.isSeeker()) {
+        <a routerLink="/seeker/dashboard" class="mobile-link" (click)="mobileOpen.set(false)">Dashboard</a>
+        <a routerLink="/seeker/applications" class="mobile-link" (click)="mobileOpen.set(false)">My Applications</a>
+        <a routerLink="/seeker/interview-prep" class="mobile-link" (click)="mobileOpen.set(false)">Interview Prep</a>
+        <a routerLink="/seeker/profile" class="mobile-link" (click)="mobileOpen.set(false)">Profile</a>
+        <a routerLink="/seeker/saved-jobs" class="mobile-link" (click)="mobileOpen.set(false)">Saved Jobs</a>
+        }
+        @if (auth.isEmployer()) {
+        <a routerLink="/employer/dashboard" class="mobile-link" (click)="mobileOpen.set(false)">Dashboard</a>
+        <a routerLink="/employer/post-job" class="mobile-link" (click)="mobileOpen.set(false)">Post a Job</a>
+        <a routerLink="/employer/jobs" class="mobile-link" (click)="mobileOpen.set(false)">Manage Jobs</a>
+        }
+        @if (!auth.isAuthenticated()) {
+        <a routerLink="/login" class="mobile-link" (click)="mobileOpen.set(false)">Login</a>
+        <a routerLink="/register" class="mobile-link accent" (click)="mobileOpen.set(false)">Register</a>
+        } @else {
+        <button class="mobile-link danger" (click)="auth.logout()">Logout</button>
+        }
+    </div>
+    }
+</nav>

@@ -1,0 +1,120 @@
+<div class="page-container animate-fade-in">
+    <!-- Greeting -->
+    <div class="greeting-bar">
+        <div>
+            <h1 class="greeting-title"> Welcome back , {{ firstName() }} 👋</h1>
+            <p class="greeting-sub">Here's what's happening with your job search today.</p>
+        </div>
+        <a routerLink="/jobs" class="btn-primary-custom">Browse Jobs <i class="bi bi-arrow-right"></i></a>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        @for (stat of stats(); track stat.label) {
+        <div class="stat-card">
+            <div class="stat-icon" [style.background]="stat.bg">
+                <i class="bi" [ngClass]="stat.icon" [style.color]="stat.color"></i>
+            </div>
+            <div>
+                <div class="stat-value">{{ stat.value }}</div>
+                <div class="stat-label">{{ stat.label }}</div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- Two Column Layout -->
+    <div class="dashboard-grid">
+        <!-- Recent Applications -->
+        <div class="dash-card">
+            <div class="section-header">
+                <h2>Recent Applications</h2>
+                <a routerLink="/seeker/applications" class="see-all">View All <i class="bi bi-arrow-right"></i></a>
+            </div>
+            @if (recentApps().length === 0) {
+            <div class="empty-state-sm">
+                <i class="bi bi-send" style="font-size:2rem;color:var(--color-text-muted)"></i>
+                <p>No applications yet. <a routerLink="/jobs">Start applying!</a></p>
+            </div>
+            } @else {
+            <div class="app-list">
+                @for (app of recentApps(); track app.id) {
+                <div class="app-item">
+                    <div class="app-main">
+                        <div class="company-dot">
+                            @if (app.companyLogo) {
+                            <img [src]="app.companyLogo" class="logo-img" [alt]="app.companyName">
+                            } @else {
+                            {{ app.companyName.charAt(0) }}
+                            }
+                        </div>
+                        <div class="app-info">
+                            <div class="app-title">{{ app.jobTitle }}</div>
+                            <div class="app-company">{{ app.companyName }} · {{ app.appliedAt }}</div>
+                        </div>
+                    </div>
+                    <app-status-badge [status]="app.status" />
+                </div>
+                }
+            </div>
+            }
+        </div>
+
+        <!-- Recommended Jobs -->
+        <div class="dash-card">
+            <div class="section-header">
+                <h2>Recommended Jobs</h2>
+                <a routerLink="/jobs" class="see-all">See All <i class="bi bi-arrow-right"></i></a>
+            </div>
+            @for (job of recommendedJobs(); track job.id) {
+            <a [routerLink]="['/jobs', job.id]" class="rec-job-item">
+                <div class="company-logo-sm">
+                    @if (job.companyLogo) {
+                    <img [src]="job.companyLogo" class="logo-img" [alt]="job.companyName">
+                    } @else {
+                    {{ job.companyName.charAt(0) }}
+                    }
+                </div>
+                <div class="rec-job-info">
+                    <div class="rec-job-title">{{ job.title }}</div>
+                    <div class="rec-job-meta">{{ job.companyName }} · {{ job.location }}</div>
+                </div>
+                <div class="rec-job-salary">{{ job.salary }}</div>
+            </a>
+            }
+        </div>
+    </div>
+
+    <!-- Profile Completion -->
+    <div class="dash-card profile-completion-card">
+        <div class="pc-left">
+            <div class="pc-title">Complete your profile to get more visibility</div>
+            <div class="pc-sub">Employers notice complete profiles 5x more often.</div>
+            <div class="progress-bar-wrap">
+                <div class="progress-bar">
+                    <div class="progress-fill" [style.width]="profileCompletion() + '%'"></div>
+                </div>
+                <div class="progress-label">{{ profileCompletion() }}% complete</div>
+            </div>
+            <div class="pc-tasks">
+                @for (task of completionTasks(); track task.label) {
+                <div class="pc-task" [class.done]="task.done">
+                    <i class="bi" [ngClass]="task.done ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+                    <a [routerLink]="task.link">{{ task.label }}</a>
+                </div>
+                }
+            </div>
+        </div>
+        <div class="pc-visual">
+            <div class="pc-circle">
+                <svg viewBox="0 0 100 100" width="120" height="120">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="var(--color-border)" stroke-width="8" />
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#4F46E5" stroke-width="8"
+                        [attr.stroke-dasharray]="(profileCompletion() * 2.83) + ' 283'" stroke-linecap="round"
+                        transform="rotate(-90 50 50)" />
+                </svg>
+                <div class="pc-pct">{{ profileCompletion() }}%</div>
+            </div>
+        </div>
+    </div>
+</div>

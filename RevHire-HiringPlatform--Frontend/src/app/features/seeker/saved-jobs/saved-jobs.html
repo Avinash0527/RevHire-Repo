@@ -1,0 +1,32 @@
+<div class="page-container animate-fade-in">
+    <div class="header-flex mb-5">
+        <div>
+            <h1 class="page-title">Saved Jobs</h1>
+            <p class="page-sub">You have bookmarked {{ savedJobs().length }} jobs for later review.</p>
+        </div>
+        @if (savedJobs().length > 0) {
+        <a routerLink="/jobs" class="btn-outline-custom">Browse More Jobs</a>
+        }
+    </div>
+
+    @if (loading()) {
+    <div class="saved-grid">
+        @for (i of [1,2,3]; track i) {
+        <div class="skeleton-card"></div>
+        }
+    </div>
+    } @else if (savedJobs().length === 0) {
+    <div class="empty-state-card glass-morphism animate-fade-in">
+        <div class="empty-icon shadow-glow">🔖</div>
+        <h3>No bookmarked jobs</h3>
+        <p>Jobs you save will appear here. Start exploring your next career move!</p>
+        <a routerLink="/jobs" class="btn-primary-custom mt-4">Explore Opportunities</a>
+    </div>
+    } @else {
+    <div class="saved-grid">
+        @for (job of savedJobs(); track job.id) {
+        <app-job-card class="animate-fade-in" [job]="job" (saveToggle)="onSaveToggle($event)" />
+        }
+    </div>
+    }
+</div>

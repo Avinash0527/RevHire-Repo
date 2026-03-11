@@ -1,0 +1,83 @@
+<div class="page-container animate-fade-in">
+    <div class="header-row">
+        <a routerLink="/employer/jobs" class="back-link"><i class="bi bi-arrow-left"></i> Back to Manage Jobs</a>
+    </div>
+
+    @if (loading()) {
+    <div class="detail-card">Loading job details...</div>
+    } @else if (!job()) {
+    <div class="detail-card">Job details are unavailable.</div>
+    } @else {
+    <div class="detail-card">
+        <div class="title-row">
+            <h1 class="page-title">{{ job()!.title }}</h1>
+            <span class="status-pill {{ (job()!.status || 'ACTIVE').toLowerCase() }}">{{ job()!.status || 'ACTIVE'
+                }}</span>
+        </div>
+        <p class="meta-line">{{ job()!.companyName }} · {{ job()!.location }} · Posted on {{ job()!.postedDate }}</p>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <span>Openings</span>
+                <b>{{ job()!.openings || 0 }}</b>
+            </div>
+            <div class="stat-box">
+                <span>Applicants</span>
+                <b>{{ job()!.applicantCount || 0 }}</b>
+            </div>
+            <div class="stat-box">
+                <span>Job Type</span>
+                <b>{{ job()!.jobType }}</b>
+            </div>
+            <div class="stat-box">
+                <span>Salary</span>
+                <b>{{ job()!.salary || 'Competitive' }}</b>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Description</h3>
+            <p class="copy">{{ job()!.description }}</p>
+        </div>
+
+        @if ((job()?.responsibilities || '').trim()) {
+        <div class="section">
+            <h3>Responsibilities</h3>
+            <ul class="bullet-list-mini">
+                @for (item of (job()?.responsibilities || '').split('\n'); track item) {
+                @if (item.trim()) { <li>{{ item.trim() }}</li> }
+                }
+            </ul>
+        </div>
+        }
+
+        <div class="section">
+            <h3>Requirements</h3>
+            <ul class="bullet-list-mini">
+                @for (item of (job()?.requirements || '').split('\n'); track item) {
+                @if (item.trim()) { <li>{{ item.trim() }}</li> }
+                }
+            </ul>
+        </div>
+
+        <div class="section">
+            <h3>Required Skills</h3>
+            <div class="chips">
+                @for (item of (job()?.skills || '').split(','); track item) {
+                @if (item.trim()) { <span class="chip">{{ item.trim() }}</span> }
+                }
+                @if (!(job()?.skills || '').trim()) {
+                <span class="chip muted">Not specified</span>
+                }
+            </div>
+        </div>
+
+        <div class="actions-row">
+            <a [routerLink]="['/employer/applicants']" [queryParams]="{jobId: job()!.id}" class="btn-primary-custom">
+                View Applicants
+            </a>
+            <a [routerLink]="['/employer/edit-job', job()!.id]" class="btn-outline-custom">Edit Job</a>
+        </div>
+    </div>
+    }
+</div>

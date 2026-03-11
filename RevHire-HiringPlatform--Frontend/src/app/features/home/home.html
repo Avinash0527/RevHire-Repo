@@ -1,0 +1,324 @@
+<div class="home-container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="hero-badge animate-fade-in">🚀 Trusted by 10,000+ Companies</div>
+            <h1 class="hero-title animate-slide-in">
+                Find Your <span class="text-gradient">Dream Job</span> <br>
+                Without the Stress.
+            </h1>
+            <p class="hero-desc animate-fade-in">
+                The most intuitive platform for tech talent and forward-thinking companies.
+                RevHire connects you with opportunities that match your potential.
+            </p>
+
+            <div class="search-box-wrapper animate-fade-in">
+                <div class="hero-search-bar">
+                    <div class="search-input">
+                        <i class="bi bi-search"></i>
+                        <input type="text" [(ngModel)]="searchKeyword" placeholder="Job title, keywords, or company">
+                    </div>
+                    <div class="location-input">
+                        <i class="bi bi-geo-alt"></i>
+                        <input type="text" [(ngModel)]="searchLocation" placeholder="City or Remote">
+                    </div>
+                    <button class="btn-search" (click)="search()">Search Jobs</button>
+                </div>
+                <div class="popular-searches">
+                    <span>Popular:</span>
+                    @for (tag of popularTags; track tag) {
+                    <a href="javascript:void(0)" (click)="searchTag(tag)">{{ tag }}</a>
+                    }
+                </div>
+            </div>
+
+            <div class="hero-stats animate-fade-in">
+                @for (stat of stats; track stat.label) {
+                <div class="stat-item">
+                    <span class="stat-val">{{ stat.value }}</span>
+                    <span class="stat-lab">{{ stat.label }}</span>
+                </div>
+                @if (!$last) { <div class="stat-divider"></div> }
+                }
+            </div>
+        </div>
+
+        <div class="hero-visual animate-fade-in">
+            <div class="visual-card main-card">
+                <div class="card-header">
+                    <div class="dots"><span></span><span></span><span></span></div>
+                </div>
+                <div class="card-body resume-preview">
+                    <div class="resume-top">
+                        <div class="resume-name">Aarav Sharma</div>
+                        <div class="resume-role">Frontend Developer</div>
+                    </div>
+                    <div class="resume-section">
+                        <div class="resume-label">Experience</div>
+                        <div class="resume-line line-lg"></div>
+                        <!-- <div class="resume-line line-md"></div> -->
+                    </div>
+                    <div class="resume-section">
+                        <div class="resume-label">Skills</div>
+                        <div class="resume-chips">
+                            <span>Angular</span>
+                            <span>TypeScript</span>
+                            <span>UI/UX</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="visual-card stat-card-floating">
+                <div class="floating-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                <div class="floating-data">
+                    <span>Success Rate</span>
+                    <b>94%</b>
+                </div>
+            </div>
+            <div class="visual-card user-card-floating">
+                <div class="floating-user">A</div>
+                <div class="floating-data">
+                    <span>Avinash </span>
+                    <b>Hired!</b>
+                </div>
+            </div>
+            <div class="hero-blob"></div>
+        </div>
+    </section>
+
+    <!-- Featured Jobs Section -->
+    <section class="featured-section">
+        <div class="section-header-flex">
+            <div>
+                <h2 class="section-title">Recent Opportunities</h2>
+                <p class="section-desc">The latest roles from top-tier tech companies.</p>
+            </div>
+            <a routerLink="/jobs" class="btn-outline-custom">View All Jobs <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        @if (loading()) {
+        <div class="jobs-grid">
+            @for (i of [1,2,3,4,5,6]; track i) {
+            <div class="skeleton-card"></div>
+            }
+        </div>
+        } @else if (recentJobs().length > 0) {
+        <div class="jobs-grid">
+            @for (job of recentJobs(); track job.id) {
+            <app-job-card [job]="job" (saveToggle)="onSaveToggle($event)" />
+            }
+        </div>
+        } @else {
+        <div class="empty-jobs-state text-center py-5">
+            <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+            <h3 class="mt-3">No recent jobs found</h3>
+            <p class="text-muted">Check back later for new opportunities.</p>
+        </div>
+        }
+    </section>
+
+    <!-- Logo Cloud Section -->
+    <section class="logo-cloud-section animate-fade-in">
+        <div class="logo-cloud-container">
+            <p class="logo-cloud-title">Trusted by industry leaders worldwide</p>
+
+            <div class="carousel-wrapper">
+                <!-- Row 1: Right to Left (FAANG / Tech / Global) -->
+                <div class="carousel-track track-right-to-left">
+                    <!-- Group 1 -->
+                    <div class="logo-group">
+                        <div class="logo-item"><img ngSrc="assets/logos/google.svg" alt="Google"
+                                class="company-logo-img" width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/microsoft.svg" alt="Microsoft"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/apple.svg" alt="Apple" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/amazon.svg" alt="Amazon"
+                                class="company-logo-img" width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/meta.svg" alt="Meta" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/netflix.svg" alt="Netflix"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/adobe.svg" alt="Adobe" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/uber.svg" alt="Uber" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/dell.svg" alt="Dell" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                    </div>
+                    <!-- Group 2 -->
+                    <div class="logo-group" aria-hidden="true">
+                        <div class="logo-item"><img ngSrc="assets/logos/google.svg" alt="Google"
+                                class="company-logo-img" width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/microsoft.svg" alt="Microsoft"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/apple.svg" alt="Apple" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/amazon.svg" alt="Amazon"
+                                class="company-logo-img" width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/meta.svg" alt="Meta" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/netflix.svg" alt="Netflix"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/adobe.svg" alt="Adobe" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/uber.svg" alt="Uber" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/dell.svg" alt="Dell" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                    </div>
+                    <!-- Group 3 -->
+                    <div class="logo-group" aria-hidden="true">
+                        <div class="logo-item"><img ngSrc="assets/logos/google.svg" alt="Google"
+                                class="company-logo-img" width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/microsoft.svg" alt="Microsoft"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/apple.svg" alt="Apple" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/amazon.svg" alt="Amazon"
+                                class="company-logo-img" width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/meta.svg" alt="Meta" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/netflix.svg" alt="Netflix"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/adobe.svg" alt="Adobe" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/uber.svg" alt="Uber" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/dell.svg" alt="Dell" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Left to Right (MNC / IT Services / Local) -->
+                <div class="carousel-track track-left-to-right">
+                    <!-- Group 1 -->
+                    <div class="logo-group">
+                        <div class="logo-item"><img ngSrc="assets/logos/infosys.svg" alt="Infosys"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/tcs.svg" alt="TCS" class="company-logo-img"
+                                width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/wipro.svg" alt="Wipro" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/capgemini.svg" alt="Capgemini"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/cognizant.svg" alt="Cognizant"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/deloitte.svg" alt="Deloitte"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/persistent.svg" alt="Persistent"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/revature.svg" alt="Revature"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/tech mahindra.svg" alt="Tech Mahindra"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/zomato.svg" alt="Zomato"
+                                class="company-logo-img" width="128" height="48">
+                        </div>
+                    </div>
+                    <!-- Group 2 -->
+                    <div class="logo-group" aria-hidden="true">
+                        <div class="logo-item"><img ngSrc="assets/logos/infosys.svg" alt="Infosys"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/tcs.svg" alt="TCS" class="company-logo-img"
+                                width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/wipro.svg" alt="Wipro" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/capgemini.svg" alt="Capgemini"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/cognizant.svg" alt="Cognizant"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/deloitte.svg" alt="Deloitte"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/persistent.svg" alt="Persistent"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/revature.svg" alt="Revature"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/tech mahindra.svg" alt="Tech Mahindra"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/zomato.svg" alt="Zomato"
+                                class="company-logo-img" width="128" height="48">
+                        </div>
+                    </div>
+                    <!-- Group 3 -->
+                    <div class="logo-group" aria-hidden="true">
+                        <div class="logo-item"><img ngSrc="assets/logos/infosys.svg" alt="Infosys"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/tcs.svg" alt="TCS" class="company-logo-img"
+                                width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/wipro.svg" alt="Wipro" class="company-logo-img"
+                                width="128" height="48">
+                        </div>
+                        <div class="logo-item"><img ngSrc="assets/logos/capgemini.svg" alt="Capgemini"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/cognizant.svg" alt="Cognizant"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/deloitte.svg" alt="Deloitte"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/persistent.svg" alt="Persistent"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/revature.svg" alt="Revature"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/tech mahindra.svg" alt="Tech Mahindra"
+                                class="company-logo-img" width="128" height="48"></div>
+                        <div class="logo-item"><img ngSrc="assets/logos/zomato.svg" alt="Zomato"
+                                class="company-logo-img" width="128" height="48">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Testimonials Section -->
+        <section class="testimonials-section">
+            <div class="section-container">
+                <h2 class="section-title text-center">What Humans Say</h2>
+                <p class="section-desc text-center">Join thousands of professionals who have found their path via
+                    RevHire.
+                </p>
+
+                <div class="testimonial-wrapper mt-4">
+                    <app-quote-carousel />
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section class="categories-section">
+            <div class="section-container">
+                <h2 class="section-title text-center">Explore by Category</h2>
+                <div class="categories-grid mt-4">
+                    @for (cat of categories; track cat.name) {
+                    <div class="category-card" [routerLink]="['/jobs']" [queryParams]="{category: cat.value}">
+                        <div class="cat-icon">{{ cat.icon }}</div>
+                        <h3 class="cat-name">{{ cat.name }}</h3>
+                        <p class="cat-count">{{ cat.count }}+ Jobs</p>
+                    </div>
+                    }
+                </div>
+            </div>
+        </section>

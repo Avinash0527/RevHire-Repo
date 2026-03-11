@@ -1,0 +1,121 @@
+<div class="job-search-container">
+    <div class="search-header-bg">
+        <div class="header-content animate-fade-in">
+            <h1>Find Your Next Opportunity</h1>
+            <p>Explore thousands of jobs from top-rated companies</p>
+
+            <div class="search-box-main mt-4">
+                <div class="sb-input">
+                    <i class="bi bi-search"></i>
+                    <input type="text" [(ngModel)]="keyword" placeholder="Job title, keywords, or company"
+                        (keyup.enter)="doSearch()">
+                </div>
+                <div class="sb-input">
+                    <i class="bi bi-geo-alt"></i>
+                    <input type="text" [(ngModel)]="locationFilter" placeholder="City or Remote"
+                        (keyup.enter)="doSearch()">
+                </div>
+                <button class="btn-search-main" (click)="doSearch()">Search</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-results-wrapper container-wide">
+        <!-- Sidebar Filters -->
+        <aside class="sidebar-filters animate-slide-in">
+            <div class="filter-card">
+                <div class="filter-header">
+                    <h3>Filters</h3>
+                    <button class="btn-clear" (click)="clearFilters()">Clear All</button>
+                </div>
+
+                <div class="filter-group">
+                    <h4>Job Type</h4>
+                    @for (type of jobTypes; track type.value) {
+                    <label class="filter-checkbox">
+                        <input type="checkbox" [checked]="selectedTypes.includes(type.value)"
+                            (change)="toggleType(type.value)">
+                        <span>{{ type.label }}</span>
+                    </label>
+                    }
+                </div>
+
+                <div class="filter-group">
+                    <h4>Experience Level</h4>
+                    @for (lvl of expLevels; track lvl.value) {
+                    <label class="filter-checkbox">
+                        <input type="checkbox" [checked]="selectedLevels.includes(lvl.value)"
+                            (change)="toggleLevel(lvl.value)">
+                        <span>{{ lvl.label }}</span>
+                    </label>
+                    }
+                </div>
+
+                <div class="filter-group">
+                    <h4>Category</h4>
+                    <div class="category-pills">
+                        @for (cat of categories; track cat.value) {
+                        <button class="cat-pill" [class.active]="selectedCategory === cat.value"
+                            (click)="toggleCategory(cat.value)">
+                            {{ cat.icon }} {{ cat.label }}
+                        </button>
+                        }
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h4>Min Salary</h4>
+                    <div class="salary-input-group">
+                        <span class="salary-val">{{ minSalaryLabel() }}</span>
+                        <input type="range" min="0" max="250000" step="10000" [(ngModel)]="salaryMin"
+                            (change)="doSearch()">
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Results -->
+        <main class="results-main">
+            <div class="results-toolbar animate-fade-in">
+                <div class="results-info">
+                    @if (loading()) {
+                    <span class="pulse">Searching for jobs...</span>
+                    } @else {
+                    <span><b>{{ filteredJobs().length }}</b> jobs matching your search</span>
+                    }
+                </div>
+                <div class="results-actions">
+                    <label>Sort by:</label>
+                    <select [(ngModel)]="sortBy" (change)="sortJobs()">
+                        <option value="recent">Newest First</option>
+                        <option value="salary_high">Highest Salary</option>
+                        <option value="applicants">Most Applicants</option>
+                    </select>
+                </div>
+            </div>
+
+            @if (loading()) {
+            <div class="jobs-list">
+                @for (i of [1,2,3,4]; track i) {
+                <div class="skeleton-item"></div>
+                }
+            </div>
+            } @else if (filteredJobs().length === 0) {
+            <div class="no-results animate-fade-in">
+                <div class="no-results-icon">
+                    <i class="bi bi-search"></i>
+                </div>
+                <h3>No matching jobs found</h3>
+                <p>Try adjusting your search terms or filters to find what you're looking for.</p>
+                <button class="btn-primary-custom mt-3" (click)="clearFilters()">Clear All Filters</button>
+            </div>
+            } @else {
+            <div class="jobs-list">
+                @for (job of filteredJobs(); track job.id) {
+                <app-job-card class="animate-fade-in" [job]="job" (saveToggle)="onSaveToggle($event)" />
+                }
+            </div>
+            }
+        </main>
+    </div>
+</div>

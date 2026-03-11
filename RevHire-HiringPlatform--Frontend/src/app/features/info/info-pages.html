@@ -1,0 +1,159 @@
+<div class="info-container">
+    <div class="info-header">
+        <div class="header-content">
+            <h1>Help & Information</h1>
+            <p>Everything you need to know about RevHire's platform, policies, and support.</p>
+        </div>
+    </div>
+
+    <div class="info-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="info-sidebar">
+            <nav>
+                <ul>
+                    @for (section of sections; track section.id) {
+                    <li [class.active]="activeSection === section.id">
+                        <a (click)="setSection(section.id)" href="javascript:void(0)">
+                            <i class="bi" [ngClass]="section.icon"></i>
+                            <span>{{ section.label }}</span>
+                        </a>
+                    </li>
+                    }
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="info-content">
+            <div class="content-card">
+                @if (activeSection === 'about') {
+                <section id="about" class="animate-fade-in">
+                    <h2>About RevHire</h2>
+                    <p class="lead">Connecting talent with opportunity since 2026.</p>
+
+                    <div class="content-body">
+                        <p>RevHire is a modern job portal designed to streamline the recruitment process. We believe
+                            that the right job can change a person's life, and the right talent can transform a company.
+                        </p>
+
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <i class="bi bi-bullseye"></i>
+                                <h3>Our Mission</h3>
+                                <p>To empower every professional to find their dream job and every company to build
+                                    their dream team.</p>
+                            </div>
+                            <div class="info-item">
+                                <i class="bi bi-graph-up-arrow"></i>
+                                <h3>Our Vision</h3>
+                                <p>To become the world's most trusted and efficient career platform powered by
+                                    intelligent matching.</p>
+                            </div>
+                        </div>
+
+                        <h3>Why Choose RevHire?</h3>
+                        <ul>
+                            <li><strong>For Candidates:</strong> Smart job recommendations, interactive resume builder,
+                                and interview preparation tools.</li>
+                            <li><strong>For Employers:</strong> Advanced applicant tracking, granular metrics, and
+                                seamless communication tools.</li>
+                        </ul>
+                    </div>
+                </section>
+                }
+
+                @if (activeSection === 'privacy') {
+                <section id="privacy" class="animate-fade-in">
+                    <h2>Privacy Policy</h2>
+                    <p class="lead">Last Updated: March 2026</p>
+
+                    <div class="content-body">
+                        <p>At RevHire, your privacy is our top priority. This policy outlines how we collect, use, and
+                            protect your personal information.</p>
+
+                        <h3>1. Information We Collect</h3>
+                        <p>We collect information you provide directly to us when you create an account, build a
+                            profile, or apply for jobs.</p>
+
+                        <h3>2. How We Use Your Data</h3>
+                        <ul>
+                            <li>To provide and maintain our services.</li>
+                            <li>To notify you about changes to our platform.</li>
+                            <li>To allow you to participate in interactive features.</li>
+                            <li>To provide customer support.</li>
+                        </ul>
+
+                        <h3>3. Data Security</h3>
+                        <p>We implement industry-standard security measures to safeguard your data from unauthorized
+                            access or disclosure.</p>
+                    </div>
+                </section>
+                }
+
+                @if (activeSection === 'terms') {
+                <section id="terms" class="animate-fade-in">
+                    <h2>Terms of Service</h2>
+                    <p class="lead">Please read these terms carefully before using our platform.</p>
+
+                    <div class="content-body">
+                        <h3>1. Acceptance of Terms</h3>
+                        <p>By accessing or using RevHire, you agree to be bound by these terms and conditions.</p>
+
+                        <h3>2. User Responsibilities</h3>
+                        <p>Users are responsible for maintaining the confidentiality of their account credentials and
+                            for all activities that occur under their account.</p>
+
+                        <h3>3. Prohibited Conduct</h3>
+                        <p>Users may not use the platform for any unlawful purpose, to harass others, or to distribute
+                            harmful content.</p>
+
+                        <h3>4. Intellectual Property</h3>
+                        <p>All content and technology on RevHire are protected by intellectual property laws and belong
+                            to RevHire Inc.</p>
+                    </div>
+                </section>
+                }
+
+                @if (activeSection === 'support') {
+                <section id="support" class="animate-fade-in">
+                    <h2>Support & Contact</h2>
+                    <p class="lead">We're here to help you succeed.</p>
+
+                    <div class="content-body">
+                        <div class="support-grid">
+                            <div class="support-card">
+                                <i class="bi bi-envelope"></i>
+                                <h3>Email Us</h3>
+                                <p>
+                                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=revhire.careers%40gmail.com"
+                                        target="_blank" rel="noopener noreferrer">revhire.careers&#64;gmail.com</a>
+                                </p>
+                                <small>Responses within 24 hours</small>
+                            </div>
+                            <div class="support-card">
+                                <i class="bi bi-telephone"></i>
+                                <h3>Call Us</h3>
+                                <p>+1 (800) REV-HIRE</p>
+                                <small>Mon-Fri, 9am - 6pm EST</small>
+                            </div>
+                        </div>
+
+                        <div class="faq-section">
+                            <h3>Frequently Asked Questions</h3>
+                            <div class="faq-item">
+                                <strong>How do I reset my password?</strong>
+                                <p>Go to the login page and click "Forgot Password". We'll send a reset link to your
+                                    email.</p>
+                            </div>
+                            <div class="faq-item">
+                                <strong>Can I hide my profile from my current employer?</strong>
+                                <p>Yes, you can toggle your profile visibility in your account settings.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                }
+            </div>
+        </main>
+    </div>
+</div>

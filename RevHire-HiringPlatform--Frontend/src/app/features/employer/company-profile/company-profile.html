@@ -1,0 +1,165 @@
+<div class="page-container animate-fade-in">
+    <div class="profile-header">
+        <h1 class="page-title">Company Profile</h1>
+        <p class="page-sub">Manage your company's public information and branding.</p>
+    </div>
+
+    <div class="profile-layout">
+        <div class="profile-sidebar">
+            <div class="profile-card avatar-card">
+                <div class="avatar-upload">
+                    <div class="avatar-large">
+                        @if (avatarPreview()) {
+                        <img [src]="avatarPreview()!" alt="Company image" class="avatar-img">
+                        } @else {
+                        {{ company()?.name?.charAt(0) || 'C' }}
+                        }
+                    </div>
+                    <input #avatarInput type="file" hidden accept="image/*" (change)="onAvatarSelected($event)">
+                    <button type="button" class="edit-avatar-btn" (click)="avatarInput.click()"><i class="bi bi-camera"></i></button>
+                </div>
+                @if (avatarPreview()) {
+                <div class="avatar-actions">
+                    <button type="button" class="avatar-action-btn danger" (click)="removeProfileImage()">Remove Image</button>
+                </div>
+                }
+                <h2 class="profile-name">{{ company()?.name || 'Your Company' }}</h2>
+                <p class="profile-email">
+                    @if (company()?.industry) { <span>{{ company()?.industry }}</span> }
+                    @if (company()?.industry && company()?.size) { <span> · </span> }
+                    @if (company()?.size) { <span>{{ company()?.size }} employees</span> }
+                    @if (!company()?.industry && !company()?.size) { <span>Complete your profile setup</span> }
+                </p>
+                <div class="profile-role-badge employer">Verified Employer</div>
+            </div>
+
+            <div class="profile-card nav-card">
+                <button class="profile-nav-btn" [class.active]="selectedTab() === 'PROFILE'"
+                    (click)="selectedTab.set('PROFILE')">
+                    <i class="bi bi-building"></i> Company Profile
+                </button>
+
+                <button class="profile-nav-btn" [class.active]="selectedTab() === 'EMPLOYEE_PROFILE'"
+                    (click)="selectedTab.set('EMPLOYEE_PROFILE')">
+                    <i class="bi bi-person-badge"></i> Employee Profile
+                </button>
+
+                <button class="profile-nav-btn" [class.active]="selectedTab() === 'SETTINGS'"
+                    (click)="selectedTab.set('SETTINGS')">
+                    <i class="bi bi-gear"></i> Settings
+                </button>
+            </div>
+        </div>
+
+        <div class="profile-main">
+            @if (selectedTab() === 'PROFILE') {
+            <div class="profile-card">
+                <div class="card-header-flex">
+                    <h2 class="card-title">General Information</h2>
+                    <button class="btn-primary-custom" (click)="saveProfile()" [disabled]="saving()">
+                        @if (saving()) { <span class="spinner-sm"></span> Saving... }
+                        @else { Save Profile }
+                    </button>
+                </div>
+
+                <form [formGroup]="companyForm" class="profile-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label-custom">Company Name *</label>
+                            <input formControlName="name" type="text" class="form-control-custom"
+                                [ngClass]="{'is-invalid': f['name'].errors && f['name'].touched}">
+                            @if (f['name'].errors?.['required'] && f['name'].touched) {
+                            <div class="field-error text-danger text-sm mt-1">Company name is required</div>
+                            }
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label-custom">Industry *</label>
+                            <input formControlName="industry" type="text" class="form-control-custom"
+                                [ngClass]="{'is-invalid': f['industry'].errors && f['industry'].touched}">
+                            @if (f['industry'].errors?.['required'] && f['industry'].touched) {
+                            <div class="field-error text-danger text-sm mt-1">Industry is required</div>
+                            }
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label-custom">Website *</label>
+                            <input formControlName="website" type="url" class="form-control-custom"
+                                placeholder="https://example.com"
+                                [ngClass]="{'is-invalid': f['website'].errors && f['website'].touched}">
+                            @if (f['website'].errors?.['required'] && f['website'].touched) {
+                            <div class="field-error text-danger text-sm mt-1">Website is required</div>
+                            }
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label-custom">Company Size</label>
+                            <input formControlName="size" type="text" class="form-control-custom"
+                                placeholder="e.g. 100-500">
+                        </div>
+                        <div class="form-group col-span-2">
+                            <label class="form-label-custom">Location</label>
+                            <input formControlName="location" type="text" class="form-control-custom"
+                                placeholder="City, Country">
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label class="form-label-custom">Company Description *</label>
+                        <textarea formControlName="description" class="form-control-custom" rows="5"
+                            placeholder="Share your company's mission, values, and what it's like to work there..."
+                            [ngClass]="{'is-invalid': f['description'].errors && f['description'].touched}"></textarea>
+                        @if (f['description'].errors?.['required'] && f['description'].touched) {
+                        <div class="field-error text-danger text-sm mt-1">Company description is required</div>
+                        }
+                    </div>
+                </form>
+            </div>
+
+            } @else if (selectedTab() === 'EMPLOYEE_PROFILE') {
+            <div class="profile-card">
+                <div class="card-header-flex">
+                    <h2 class="card-title">Personal Details</h2>
+                    <button class="btn-primary-custom" (click)="saveProfile()" [disabled]="saving()">
+                        @if (saving()) { <span class="spinner-sm"></span> Saving... }
+                        @else { Save Profile }
+                    </button>
+                </div>
+
+                <form [formGroup]="companyForm" class="profile-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label-custom">Full Name *</label>
+                            <input formControlName="userName" type="text" class="form-control-custom"
+                                [ngClass]="{'is-invalid': f['userName'].errors && f['userName'].touched}">
+                            @if (f['userName'].errors?.['required'] && f['userName'].touched) {
+                            <div class="field-error text-danger text-sm mt-1">Name is required</div>
+                            }
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label-custom">Email Address</label>
+                            <input formControlName="userEmail" type="email" class="form-control-custom disabled-input"
+                                readonly>
+                            <small class="text-muted">Email cannot be changed.</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label-custom">Phone Number</label>
+                            <input formControlName="userPhone" type="tel" class="form-control-custom"
+                                placeholder="9876543210" maxlength="10" inputmode="numeric"
+                                [ngClass]="{'is-invalid': f['userPhone'].errors && f['userPhone'].touched}">
+                            @if (f['userPhone'].errors?.['pattern'] && f['userPhone'].touched) {
+                            <div class="field-error text-danger text-sm mt-1">Phone must be exactly 10 digits</div>
+                            }
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            } @else if (selectedTab() === 'SETTINGS') {
+            <div class="profile-card empty-state">
+                <div class="empty-icon">⚙️</div>
+                <h3>Account Settings</h3>
+                <p>Advanced security and workspace settings will be available here shortly.</p>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+

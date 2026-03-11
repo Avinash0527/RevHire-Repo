@@ -1,0 +1,474 @@
+<div class="page-container animate-fade-in full-width-page">
+    <div class="builder-layout">
+        <!-- Editor Column -->
+        <div class="editor-col">
+            <div class="editor-header">
+                <h1 class="page-title">Resume Builder</h1>
+                <p class="page-sub">Fill in your details to generate a professional resume.</p>
+                <div class="editor-actions">
+                    <button class="btn-primary-custom" (click)="saveResume()" [disabled]="saving()">
+                        @if (saving()) { <span class="spinner-sm"></span> Saving... }
+                        @else { <i class="bi bi-save"></i> Save Resume }
+                    </button>
+                    <button class="btn-outline-custom" (click)="downloadResume()"><i class="bi bi-download"></i>
+                        Download PDF</button>
+                </div>
+            </div>
+
+            <div class="accordion-sections">
+                <!-- Personal Info Section -->
+                <div class="editor-card">
+                    <div class="editor-section-header clickable" (click)="toggleSection('personal')">
+                        <h3 class="editor-section-title"><i class="bi bi-person-circle"></i> Personal Information</h3>
+                        <div class="header-right">
+                            <button class="btn-save-section"
+                                (click)="$event.stopPropagation(); saveResume()">Save</button>
+                            <i class="bi" [ngClass]="isExpanded('personal') ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                        </div>
+                    </div>
+
+                    @if (isExpanded('personal')) {
+                    <form [formGroup]="resumeForm" class="animate-fade-in">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label-custom">Full Name</label>
+                                <input formControlName="fullName" type="text" class="form-control-custom"
+                                    [ngClass]="{'is-invalid': resumeForm.controls['fullName'].errors && resumeForm.controls['fullName'].touched}"
+                                    placeholder="John Doe">
+                                @if (resumeForm.controls['fullName'].errors?.['required'] &&
+                                resumeForm.controls['fullName'].touched) {
+                                <div class="field-error">Full name is required</div>
+                                }
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-custom">Job Title</label>
+                                <input formControlName="title" type="text" class="form-control-custom"
+                                    placeholder="Senior Frontend Developer">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-custom">Email</label>
+                                <input formControlName="email" type="email" class="form-control-custom"
+                                    [ngClass]="{'is-invalid': resumeForm.controls['email'].errors && resumeForm.controls['email'].touched}"
+                                    placeholder="john@example.com">
+                                @if (resumeForm.controls['email'].errors?.['required'] &&
+                                resumeForm.controls['email'].touched) {
+                                <div class="field-error">Email is required</div>
+                                }
+                                @if (resumeForm.controls['email'].errors?.['pattern'] &&
+                                resumeForm.controls['email'].touched) {
+                                <div class="field-error">Enter a valid email (e.g. name&#64;example.com)</div>
+                                }
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-custom">Phone</label>
+                                <input formControlName="phone" type="tel" class="form-control-custom" maxlength="14"
+                                    inputmode="numeric"
+                                    [ngClass]="{'is-invalid': resumeForm.controls['phone'].errors && resumeForm.controls['phone'].touched}"
+                                    placeholder="+91 9xxxxxxxxx">
+                                @if (resumeForm.controls['phone'].errors?.['pattern'] &&
+                                resumeForm.controls['phone'].touched) {
+                                <div class="field-error">Phone must be exactly 10 digits</div>
+                                }
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-custom">Location</label>
+                                <input formControlName="location" type="text" class="form-control-custom"
+                                    placeholder="City, State">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label-custom">Website (LinkedIn, GitHub)</label>
+                                <input formControlName="website" type="url" class="form-control-custom"
+                                    [ngClass]="{'is-invalid': resumeForm.controls['website'].errors && resumeForm.controls['website'].touched}"
+                                    placeholder="https://johndoe.me">
+                                @if (resumeForm.controls['website'].errors?.['pattern'] &&
+                                resumeForm.controls['website'].touched) {
+                                <div class="field-error">Enter a valid URL starting with http:// or https://</div>
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label class="form-label-custom">Summary</label>
+                            <textarea formControlName="summary" class="form-control-custom" rows="3"
+                                placeholder="Brief professional summary..."></textarea>
+                        </div>
+                    </form>
+                    }
+                </div>
+
+                <!-- Experience Section -->
+                <div class="editor-card">
+                    <div class="editor-section-header clickable" (click)="toggleSection('experience')">
+                        <h3 class="editor-section-title"><i class="bi bi-briefcase"></i> Work Experience</h3>
+                        <div class="header-right">
+                            <button class="btn-save-section"
+                                (click)="$event.stopPropagation(); saveResume()">Save</button>
+                            <button class="btn-add-sm" (click)="$event.stopPropagation(); addExperience()"><i
+                                    class="bi bi-plus"></i></button>
+                            <i class="bi"
+                                [ngClass]="isExpanded('experience') ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                        </div>
+                    </div>
+
+                    @if (isExpanded('experience')) {
+                    <div class="experience-forms animate-fade-in">
+                        @for (exp of experienceArr.controls; track exp; let i = $index) {
+                        <div class="dynamic-item-card" [formGroup]="$any(exp)">
+                            <div class="item-header">
+                                <span>Experience #{{ i + 1 }}</span>
+                                <button class="item-remove" (click)="removeExperience(i)">&times;</button>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label-custom">Company</label>
+                                    <input formControlName="company" type="text" class="form-control-custom">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label-custom">Position</label>
+                                    <input formControlName="position" type="text" class="form-control-custom">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label-custom">Start Date</label>
+                                    <input formControlName="startDate" type="month" class="form-control-custom">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label-custom">End Date</label>
+                                    <div class="experience-end-date-row">
+                                        <input formControlName="endDate"
+                                            [type]="isExperiencePresent(i) ? 'text' : 'month'"
+                                            class="form-control-custom" [readonly]="isExperiencePresent(i)"
+                                            [placeholder]="isExperiencePresent(i) ? 'Present' : ''">
+                                        <button type="button" class="btn-end-date-toggle"
+                                            (click)="isExperiencePresent(i) ? useExperienceEndDate(i) : setExperiencePresent(i)">
+                                            {{ isExperiencePresent(i) ? 'Use date' : 'Present' }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-2">
+                                <label class="form-label-custom">Description</label>
+                                <textarea formControlName="description" class="form-control-custom" rows="2"></textarea>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+
+                <!-- Education Section -->
+                <div class="editor-card">
+                    <div class="editor-section-header clickable" (click)="toggleSection('education')">
+                        <h3 class="editor-section-title"><i class="bi bi-mortarboard"></i> Education</h3>
+                        <div class="header-right">
+                            <button class="btn-save-section"
+                                (click)="$event.stopPropagation(); saveResume()">Save</button>
+                            <button class="btn-add-sm" (click)="$event.stopPropagation(); addEducation()"><i
+                                    class="bi bi-plus"></i></button>
+                            <i class="bi" [ngClass]="isExpanded('education') ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                        </div>
+                    </div>
+
+                    @if (isExpanded('education')) {
+                    <div class="education-forms animate-fade-in">
+                        @for (edu of educationArr.controls; track edu; let i = $index) {
+                        <div class="dynamic-item-card" [formGroup]="$any(edu)">
+                            <div class="item-header">
+                                <span>Education #{{ i + 1 }}</span>
+                                <button class="item-remove" (click)="removeEducation(i)">&times;</button>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label-custom">Institution</label>
+                                    <input formControlName="school" type="text" class="form-control-custom">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label-custom">Degree</label>
+                                    <input formControlName="degree" type="text" class="form-control-custom">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label-custom">Field</label>
+                                    <input formControlName="field" type="text" class="form-control-custom">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label-custom">Completed Year</label>
+                                    <input formControlName="endDate" type="text" class="form-control-custom"
+                                        placeholder="YYYY" maxlength="4" inputmode="numeric"
+                                        [ngClass]="{'is-invalid': $any(edu).controls.endDate.errors && $any(edu).controls.endDate.touched}">
+                                    @if ($any(edu).controls.endDate.errors?.['pattern'] &&
+                                    $any(edu).controls.endDate.touched) {
+                                    <div class="field-error">Enter a valid year (e.g. 2024)</div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+
+                <!-- Projects Section -->
+                <div class="editor-card">
+                    <div class="editor-section-header clickable" (click)="toggleSection('projects')">
+                        <h3 class="editor-section-title"><i class="bi bi-folder"></i> Projects</h3>
+                        <div class="header-right">
+                            <button class="btn-save-section"
+                                (click)="$event.stopPropagation(); saveResume()">Save</button>
+                            <button class="btn-add-sm" (click)="$event.stopPropagation(); addProject()"><i
+                                    class="bi bi-plus"></i></button>
+                            <i class="bi" [ngClass]="isExpanded('projects') ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                        </div>
+                    </div>
+                    @if (isExpanded('projects')) {
+                    <div class="projects-forms animate-fade-in">
+                        @for (proj of projectsArr.controls; track proj; let i = $index) {
+                        <div class="dynamic-item-card" [formGroup]="$any(proj)">
+                            <div class="item-header">
+                                <span>Project #{{ i + 1 }}</span>
+                                <button class="item-remove" (click)="removeProject(i)">&times;</button>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label-custom">Project Name</label>
+                                    <input formControlName="name" type="text" class="form-control-custom">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label-custom">Link (GitHub/Live)</label>
+                                    <input formControlName="link" type="text" class="form-control-custom"
+                                        [ngClass]="{'is-invalid': $any(proj).controls.link.errors && ($any(proj).controls.link.touched || $any(proj).controls.link.dirty)}"
+                                        placeholder="https://...">
+                                    @if ($any(proj).controls.link.errors?.['pattern'] &&
+                                    ($any(proj).controls.link.touched || $any(proj).controls.link.dirty)) {
+                                    <div class="field-error">Use a GitHub link like https://github.com/username</div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="form-group mt-2">
+                                <label class="form-label-custom">Description</label>
+                                <textarea formControlName="description" class="form-control-custom" rows="2"></textarea>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+
+                <!-- Certifications Section -->
+                <div class="editor-card">
+                    <div class="editor-section-header clickable" (click)="toggleSection('certificates')">
+                        <h3 class="editor-section-title"><i class="bi bi-patch-check"></i> Certifications</h3>
+                        <div class="header-right">
+                            <button class="btn-save-section"
+                                (click)="$event.stopPropagation(); saveResume()">Save</button>
+                            <button class="btn-add-sm" (click)="$event.stopPropagation(); addCertification()"><i
+                                    class="bi bi-plus"></i></button>
+                            <i class="bi"
+                                [ngClass]="isExpanded('certificates') ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                        </div>
+                    </div>
+                    @if (isExpanded('certificates')) {
+                    <div class="cert-forms animate-fade-in">
+                        @for (cert of certificationsArr.controls; track cert; let i = $index) {
+                        <div class="dynamic-item-card" [formGroup]="$any(cert)">
+                            <div class="item-header">
+                                <span>Certification #{{ i + 1 }}</span>
+                                <button class="item-remove" (click)="removeCertification(i)">&times;</button>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label-custom">Certificate Name</label>
+                                    <input formControlName="name" type="text" class="form-control-custom">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label-custom">Issuer</label>
+                                    <input formControlName="issuer" type="text" class="form-control-custom">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label-custom">Issued Date</label>
+                                    <input formControlName="date" type="text" class="form-control-custom"
+                                        placeholder="MM/YYYY">
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+
+                <!-- Skills Section -->
+                <div class="editor-card">
+                    <div class="editor-section-header clickable" (click)="toggleSection('skills')">
+                        <h3 class="editor-section-title"><i class="bi bi-cpu"></i> Skills</h3>
+                        <div class="header-right">
+                            <button class="btn-save-section"
+                                (click)="$event.stopPropagation(); saveResume()">Save</button>
+                            <button class="btn-add-sm" (click)="$event.stopPropagation(); addSkill()"><i
+                                    class="bi bi-plus"></i></button>
+                            <i class="bi" [ngClass]="isExpanded('skills') ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                        </div>
+                    </div>
+                    @if (isExpanded('skills')) {
+                    <div class="skills-forms animate-fade-in">
+                        @for (skill of skillsArr.controls; track skill; let i = $index) {
+                        <div class="dynamic-item-card" [formGroup]="$any(skill)">
+                            <div class="skills-row">
+                                <div class="form-group flex-1">
+                                    <input formControlName="name" type="text" class="form-control-custom"
+                                        placeholder="Skill Name">
+                                </div>
+                                <div class="form-group">
+                                    <select formControlName="level" class="form-control-custom border-none">
+                                        <option value="BEGINNER">Beginner</option>
+                                        <option value="INTERMEDIATE">Intermediate</option>
+                                        <option value="EXPERT">Expert</option>
+                                    </select>
+                                </div>
+                                <button class="item-remove" (click)="removeSkill(i)">&times;</button>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Column -->
+        <div class="preview-col">
+            <div class="preview-sticky">
+                <div class="preview-header">
+                    <button type="button" class="btn-preview-toggle" (click)="openPreviewModal()">
+                        <i class="bi bi-eye"></i>
+                        Live Preview
+                    </button>
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" (click)="zoomOut()"><i class="bi bi-dash"></i></button>
+                        <span>{{ (zoomScale() * 100).toFixed(0) }}%</span>
+                        <button class="zoom-btn" (click)="zoomIn()"><i class="bi bi-plus"></i></button>
+                    </div>
+                </div>
+
+                <ng-template #resumePreviewContent>
+                    <div class="resume-view" [style.transform]="'scale(' + zoomScale() + ')'"
+                        [style.transform-origin]="'top center'">
+                        <div class="rv-header">
+                            <h1 class="rv-name">{{ resumeForm.value.fullName || 'YOUR NAME' }}</h1>
+                            <p class="rv-title-sub">{{ resumeForm.value.title || 'Professional Title' }}</p>
+                            <div class="rv-contact">
+                                @if (resumeForm.value.email) { <span><i class="bi bi-envelope"></i> {{
+                                    resumeForm.value.email }}</span> }
+                                @if (resumeForm.value.phone) { <span><i class="bi bi-telephone"></i> {{
+                                    resumeForm.value.phone }}</span> }
+                                @if (resumeForm.value.location) { <span><i class="bi bi-geo-alt"></i> {{
+                                    resumeForm.value.location }}</span> }
+                                @if (resumeForm.value.website) { <span><i class="bi bi-globe"></i> {{
+                                    resumeForm.value.website }}</span> }
+                            </div>
+                        </div>
+
+                        @if (resumeForm.value.summary) {
+                        <div class="rv-section">
+                            <h2 class="rv-section-title">Summary</h2>
+                            <p class="rv-summary">{{ resumeForm.value.summary }}</p>
+                        </div>
+                        }
+
+                        @if (experienceArr.length > 0) {
+                        <div class="rv-section">
+                            <h2 class="rv-section-title">Experience</h2>
+                            @for (exp of experienceArr.value; track exp) {
+                            <div class="rv-item">
+                                <div class="rv-item-header">
+                                    <span class="rv-item-bold">{{ exp.position }}</span>
+                                    <span class="rv-item-date">{{ exp.startDate }} - {{ exp.endDate }}</span>
+                                </div>
+                                <div class="rv-item-sub">{{ exp.company }}</div>
+                                <p class="rv-item-desc">{{ exp.description }}</p>
+                            </div>
+                            }
+                        </div>
+                        }
+
+                        @if (projectsArr.length > 0) {
+                        <div class="rv-section">
+                            <h2 class="rv-section-title">Projects</h2>
+                            @for (proj of projectsArr.value; track proj) {
+                            <div class="rv-item">
+                                <div class="rv-item-header">
+                                    <span class="rv-item-bold">{{ proj.name }}</span>
+                                    @if (proj.link) { <span class="rv-item-date">{{ proj.link }}</span> }
+                                </div>
+                                <p class="rv-item-desc">{{ proj.description }}</p>
+                            </div>
+                            }
+                        </div>
+                        }
+
+                        @if (educationArr.length > 0) {
+                        <div class="rv-section">
+                            <h2 class="rv-section-title">Education</h2>
+                            @for (edu of educationArr.value; track edu) {
+                            <div class="rv-item">
+                                <div class="rv-item-header">
+                                    <span class="rv-item-bold">{{ edu.degree }} in {{ edu.field }}</span>
+                                    <span class="rv-item-date">{{ edu.endDate }}</span>
+                                </div>
+                                <div class="rv-item-sub">{{ edu.school }}</div>
+                            </div>
+                            }
+                        </div>
+                        }
+
+                        @if (certificationsArr.length > 0) {
+                        <div class="rv-section">
+                            <h2 class="rv-section-title">Certifications</h2>
+                            @for (cert of certificationsArr.value; track cert) {
+                            <div class="rv-item">
+                                <div class="rv-item-header">
+                                    <span class="rv-item-bold">{{ cert.name }}</span>
+                                    <span class="rv-item-date">{{ cert.date }}</span>
+                                </div>
+                                <div class="rv-item-sub">{{ cert.issuer }}</div>
+                            </div>
+                            }
+                        </div>
+                        }
+
+                        @if (skillsArr.length > 0) {
+                        <div class="rv-section">
+                            <h2 class="rv-section-title">Skills</h2>
+                            <div class="rv-skills-grid">
+                                @for (skill of skillsArr.value; track skill) {
+                                <div class="rv-skill">
+                                    <span class="rv-skill-dot"></span>
+                                    <span class="rv-skill-name">{{ skill.name }}</span>
+                                    <span class="rv-skill-lvl">({{ skill.level?.toLowerCase() }})</span>
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </ng-template>
+
+                <div class="resume-sheet">
+                    <ng-container [ngTemplateOutlet]="resumePreviewContent"></ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (previewModalOpen()) {
+    <div class="resume-preview-modal" (click)="closePreviewModal()">
+        <div class="resume-preview-modal-content" (click)="$event.stopPropagation()">
+            <div class="resume-preview-modal-header">
+                <h3>Resume Preview</h3>
+                <button type="button" class="resume-preview-close" (click)="closePreviewModal()">&times;</button>
+            </div>
+            <div class="resume-preview-modal-body">
+                <div class="resume-sheet modal-resume-sheet">
+                    <ng-container [ngTemplateOutlet]="resumePreviewContent"></ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+</div>

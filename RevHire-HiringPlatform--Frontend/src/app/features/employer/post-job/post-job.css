@@ -1,0 +1,334 @@
+.post-job-header {
+    margin-bottom: 2.5rem;
+    border-bottom: 2px solid var(--color-border);
+    padding-bottom: 1.5rem;
+}
+
+.page-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    background: var(--gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.page-sub {
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    max-width: 600px;
+    line-height: 1.5;
+}
+
+.step-indicator-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 600px;
+    margin: 0 auto 3rem;
+}
+
+.step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.step-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.step-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.3s;
+}
+
+.step-item.active .step-num {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.step-item.active.current .step-num {
+    background: var(--color-primary);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+}
+
+.step-item.active .step-label {
+    color: var(--color-text);
+}
+
+.step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--color-border);
+    margin: 0 -10px 1.5rem;
+    transition: all 0.3s;
+}
+
+.step-line.active {
+    background: var(--color-primary);
+}
+
+.form-container-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    padding: 2.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.form-section-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--color-text);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+.col-span-2 {
+    grid-column: span 2;
+}
+
+.form-row {
+    display: flex;
+    gap: 1.25rem;
+}
+
+.form-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.btn-add-sm {
+    background: none;
+    border: none;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.dynamic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.dynamic-input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-remove-sm {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    color: var(--color-danger);
+    cursor: pointer;
+    opacity: 0.6;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.review-box {
+    border: 1.5px solid var(--color-border);
+    border-radius: 0.75rem;
+    background: var(--color-bg);
+    overflow: hidden;
+}
+
+.review-header {
+    padding: 1.5rem;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+}
+
+.rh-company {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+
+.rh-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.rh-meta {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+.review-body {
+    padding: 1.5rem;
+}
+
+.review-body h3 {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--color-text);
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+
+    &:first-child {
+        margin-top: 0;
+    }
+}
+
+.review-body p {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+}
+
+.recap-list {
+    list-style: none;
+    padding: 0;
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+
+    li {
+        margin-bottom: 0.25rem;
+    }
+}
+
+.btn-post-final {
+    background: var(--color-secondary);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+        background: var(--color-secondary);
+        opacity: 0.9;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.form-footer {
+    display: flex;
+    align-items: center;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.flex-spacer {
+    flex: 1;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.825rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+
+    input {
+        accent-color: var(--color-secondary);
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.btn-outline-custom {
+    border: 1.5px solid var(--color-border);
+    color: var(--color-text);
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+
+    &:hover:not(:disabled) {
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+    }
+
+    &:disabled {
+        opacity: 0.3;
+    }
+}
+
+.btn-primary-custom {
+    background: #4F46E5;
+    color: white;
+    padding: 0.625rem 1.25rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        background: #4338ca;
+    }
+}
+
+.field-error-banner {
+    display: flex;
+    align-items: center;
+    background: var(--color-danger-bg);
+    border: 1px solid var(--color-danger);
+    color: var(--color-danger);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+}

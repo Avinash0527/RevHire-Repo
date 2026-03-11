@@ -1,0 +1,66 @@
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="brand-logo">
+                    <span class="logo-icon">RH</span>
+                    <span class="logo-text">Rev<span>Hire</span></span>
+                </div>
+                <p class="brand-desc">
+                    Simplifying the job search and hiring process for millions of people worldwide.
+                    Find your next career move or hire the best talent.
+                </p>
+                <div class="social-links">
+                    <a href="https://x.com" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)"><i
+                            class="bi bi-twitter-x"></i></a>
+                    <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer"
+                        aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    <a href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i
+                            class="bi bi-github"></i></a>
+                    <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer"
+                        aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                </div>
+            </div>
+
+            @if (!auth.isEmployer()) {
+            <div class="footer-links">
+                <h3>For Candidates</h3>
+                <ul>
+                    <li><a routerLink="/jobs">Browse Jobs</a></li>
+                    <li><a [routerLink]="auth.isSeeker() ? '/seeker/dashboard' : '/login'">Dashboard</a></li>
+                    <li><a [routerLink]="auth.isSeeker() ? '/seeker/applications' : '/login'">My Applications</a></li>
+                    <li><a [routerLink]="auth.isSeeker() ? '/seeker/resume-builder' : '/login'">Resume Builder</a></li>
+                </ul>
+            </div>
+            }
+
+            @if (!auth.isSeeker()) {
+            <div class="footer-links">
+                <h3>For Employers</h3>
+                <ul>
+                    <li><a [routerLink]="auth.isEmployer() ? '/employer/post-job' : '/login'">Post a Job</a></li>
+                    <li><a [routerLink]="auth.isEmployer() ? '/employer/dashboard' : '/login'">Dashboard</a></li>
+                    <li><a [routerLink]="auth.isEmployer() ? '/employer/jobs' : '/login'">Manage Jobs</a></li>
+                    <li><a [routerLink]="auth.isEmployer() ? '/employer/applicants' : '/login'">Review Applicants</a>
+                    </li>
+                </ul>
+            </div>
+            }
+
+            <div class="footer-links">
+                <h3>Careers</h3>
+                <ul>
+                    <li><a routerLink="/info" [queryParams]="{section: 'about'}">About Us</a></li>
+                    <li><a routerLink="/info" [queryParams]="{section: 'privacy'}">Privacy Policy</a></li>
+                    <li><a routerLink="/info" [queryParams]="{section: 'terms'}">Terms of Service</a></li>
+                    <li><a routerLink="/info" [queryParams]="{section: 'support'}">Support</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 RevHire Inc. All rights reserved.</p>
+            <div class="theme-note">Made with &hearts; for the future of work.</div>
+        </div>
+    </div>
+</footer>

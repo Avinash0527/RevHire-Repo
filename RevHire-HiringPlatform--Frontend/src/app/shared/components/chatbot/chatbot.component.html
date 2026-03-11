@@ -1,0 +1,60 @@
+<div class="chatbot-wrapper" [class.open]="isOpen()">
+    <!-- Chat Window -->
+    <div class="chat-window">
+        <div class="chat-header">
+            <div class="header-info">
+                <div class="bot-avatar">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <div>
+                    <h3>RevHire Assistant</h3>
+                    <span class="status-indicator">Online</span>
+                </div>
+            </div>
+            <button class="close-btn" (click)="toggleChat()">
+                <i class="bi bi-dash-lg"></i>
+            </button>
+        </div>
+
+        <div class="chat-messages" #scrollContainer>
+            @for (msg of messages(); track msg.content) {
+            <div class="message" [class.user]="msg.role === 'user'" [class.assistant]="msg.role === 'assistant'">
+                <div class="msg-content">
+                    {{ msg.content }}
+                </div>
+            </div>
+            }
+            @if (loading()) {
+            <div class="message assistant">
+                <div class="msg-content typing">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+            }
+        </div>
+
+        <div class="chat-input">
+            <input type="text" [(ngModel)]="userInput" (keyup.enter)="sendMessage()"
+                placeholder="Ask me anything about RevHire..." [disabled]="loading()">
+            <button class="send-btn" (click)="sendMessage()" [disabled]="loading() || !userInput()">
+                @if (loading()) {
+                <i class="bi bi-hourglass-split"></i>
+                } @else {
+                <i class="bi bi-send-fill"></i>
+                }
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Bubble -->
+    <button class="chat-bubble" (click)="toggleChat()" [class.active]="isOpen()" aria-label="Open Chatbot">
+        @if (isOpen()) {
+        <i class="bi bi-x-lg"></i>
+        } @else {
+        <i class="bi bi-chat-dots-fill"></i>
+        <span class="notification-badge"></span>
+        }
+    </button>
+</div>

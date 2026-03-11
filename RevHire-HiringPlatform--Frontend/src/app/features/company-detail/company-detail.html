@@ -1,0 +1,117 @@
+<div class="company-detail-page animate-fade-in">
+    @if (loading()) {
+    <div class="loading-container">
+        <div class="spinner"></div>
+    </div>
+    } @else if (notFound()) {
+    <div class="empty-state">
+        <div class="icon">🏢</div>
+        <h2>Company Not Found</h2>
+        <p>The company you are looking for does not exist or has been removed.</p>
+        <a routerLink="/jobs" class="btn-primary-custom">Back to Job Search</a>
+    </div>
+    } @else {
+    <!-- Hero Section -->
+    <div class="company-hero">
+        <div class="container-custom">
+            <div class="hero-flex">
+                <div class="company-logo-large">
+                    @if (company()?.logo) {
+                    <img [src]="company()?.logo" class="logo-img" [alt]="company()?.name">
+                    } @else {
+                    {{ company()?.name?.charAt(0) }}
+                    }
+                </div>
+                <div class="hero-info">
+                    <div class="industry-tag">{{ company()?.industry }}</div>
+                    <h1>{{ company()?.name }}</h1>
+                    <div class="meta-row">
+                        <span><i class="bi bi-geo-alt"></i> {{ company()?.location }}</span>
+                        <span><i class="bi bi-people"></i> {{ company()?.size }} Employees</span>
+                        @if (company()?.website) {
+                        <span><i class="bi bi-globe"></i> <a [href]="company()?.website" target="_blank">{{
+                                company()?.website }}</a></span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-custom py-5">
+        <div class="content-grid">
+            <!-- Left: About & Stats -->
+            <div class="main-column">
+                <section class="info-section">
+                    <h2 class="section-title">About {{ company()?.name }}</h2>
+                    <p class="description-text">{{ company()?.description }}</p>
+                </section>
+
+                <section class="jobs-section mt-5">
+                    <div class="section-header-flex">
+                        <h2 class="section-title">Open Positions</h2>
+                        <span class="job-count">{{ openJobsCount() }} jobs • {{ totalPositionsCount() }} total
+                            openings</span>
+                    </div>
+
+                    <div class="jobs-grid mt-4">
+                        @for (job of activeJobs(); track job.id) {
+                        <app-job-card [job]="job" [flat]="true" (saveToggle)="onSaveToggle($event)" />
+                        }
+                        @if (activeJobs().length === 0) {
+                        <div class="no-jobs">
+                            <i class="bi bi-briefcase"></i>
+                            <p>No open positions at the moment.</p>
+                        </div>
+                        }
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right: Sidebar -->
+            <aside class="side-column">
+                <div class="side-card">
+                    <h3>At a Glance</h3>
+                    <div class="glance-items">
+                        <div class="glance-item">
+                            <span class="label">Industry</span>
+                            <span class="value">{{ company()?.industry }}</span>
+                        </div>
+                        <div class="glance-item">
+                            <span class="label">Founded</span>
+                            <span class="value">{{ company()?.founded }}</span>
+                        </div>
+                        <div class="glance-item">
+                            <span class="label">Company Size</span>
+                            <span class="value">{{ company()?.size }}</span>
+                        </div>
+                        <div class="glance-item">
+                            <span class="label">Location</span>
+                            <span class="value">{{ company()?.location }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                @if (company()?.socialLinks) {
+                <div class="side-card mt-4">
+                    <h3>Social Media</h3>
+                    <div class="social-links">
+                        @if (company()?.socialLinks?.linkedin) {
+                        <a [href]="company()?.socialLinks?.linkedin" target="_blank" class="social-btn linkedin">
+                            <i class="bi bi-linkedin"></i> LinkedIn
+                        </a>
+                        }
+                        @if (company()?.socialLinks?.twitter) {
+                        <a [href]="company()?.socialLinks?.twitter" target="_blank" class="social-btn twitter">
+                            <i class="bi bi-twitter"></i> Twitter
+                        </a>
+                        }
+                    </div>
+                </div>
+                }
+            </aside>
+        </div>
+    </div>
+    }
+</div>

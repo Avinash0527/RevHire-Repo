@@ -1,0 +1,242 @@
+<div class="admin-dashboard">
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <h3>Admin Panel</h3>
+        </div>
+        <nav class="sidebar-nav">
+            <button [class.active]="activeTab() === 'users'" (click)="switchTab('users')">
+                <i class="bi bi-people"></i> Users
+            </button>
+            <button [class.active]="activeTab() === 'metrics'" (click)="switchTab('metrics')">
+                <i class="bi bi-bar-chart"></i> Metrics
+            </button>
+            <button [class.active]="activeTab() === 'logs'" (click)="switchTab('logs')">
+                <i class="bi bi-journal-text"></i> Audit Logs
+            </button>
+        </nav>
+    </div>
+
+    <div class="admin-content">
+        @if (loading()) {
+        <div class="loader">
+            <i class="bi bi-arrow-repeat rotate"></i> Loading Dashboard...
+        </div>
+        } @else {
+        <div class="tab-content">
+            <!-- Users Tab -->
+            @if (activeTab() === 'users') {
+            <div class="content-header">
+                <h2>User Management</h2>
+                <div class="stats-mini">Total Users: {{ users().length }}</div>
+            </div>
+
+            <div class="table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (u of pagedUsers(); track u.id) {
+                        <tr>
+                            <td>#{{ u.id }}</td>
+                            <td>{{ u.name }}</td>
+                            <td>{{ u.email }}</td>
+                            <td><span class="badge" [ngClass]="u.role">{{ u.role }}</span></td>
+                            <td>
+                                <span class="status-dot" [class.active]="u.status"></span>
+                                {{ u.status ? 'Active' : 'Inactive' }}
+                            </td>
+                            <td>
+                                <div class="btn-group-action">
+                                    <button class="btn-action" (click)="toggleUserStatus(u)">
+                                        {{ u.status ? 'Deactivate' : 'Activate' }}
+                                    </button>
+                                    <button class="btn-action danger" (click)="deleteUser(u)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <app-pagination [totalItems]="users().length" [pageSize]="pageSize" [currentPage]="userPage()"
+                (pageChange)="userPage.set($event)">
+            </app-pagination>
+            }
+
+            <!-- Metrics Tab -->
+            @if (activeTab() === 'metrics') {
+            <div class="content-header">
+                <h2>System Analytics</h2>
+                <button class="btn-refresh" (click)="loadMetrics()">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+            </div>
+
+            <div class="dashboard-visual">
+                <!-- Top Row: Overview Cards -->
+                <div class="metrics-grid">
+                    <div class="stat-card blue">
+                        <div class="icon-box"><i class="bi bi-people-fill"></i></div>
+                        <div class="details">
+                            <span class="label">Total Users</span>
+                            <h3 class="value">{{ metrics()?.totalUsers || 0 }}</h3>
+                            <span class="sub-label">{{ metrics()?.activeUsers || 0 }} Active</span>
+                        </div>
+                    </div>
+                    <div class="stat-card purple">
+                        <div class="icon-box"><i class="bi bi-briefcase-fill"></i></div>
+                        <div class="details">
+                            <span class="label">Job Posts</span>
+                            <h3 class="value">{{ metrics()?.totalJobs || 0 }}</h3>
+                            <span class="sub-label">{{ metrics()?.activeJobs || 0 }} Active</span>
+                        </div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="icon-box"><i class="bi bi-file-earmark-text-fill"></i></div>
+                        <div class="details">
+                            <span class="label">Applications</span>
+                            <h3 class="value">{{ metrics()?.totalApplications || 0 }}</h3>
+                            <span class="sub-label">{{ metrics()?.selected || 0 }} Hired</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="distribution-row mt-4">
+                    <!-- User Distribution -->
+                    <div class="viz-card">
+                        <h4>User Roles Distribution</h4>
+                        <div class="role-bars">
+                            <div class="dist-item">
+                                <label>Seekers ({{ metrics()?.seekers || 0 }})</label>
+                                <div class="progress-container">
+                                    <div class="progress-bar seeker"
+                                        [style.width.%]="(metrics()?.seekers / metrics()?.totalUsers) * 100 || 0"></div>
+                                </div>
+                            </div>
+                            <div class="dist-item">
+                                <label>Employers ({{ metrics()?.employers || 0 }})</label>
+                                <div class="progress-container">
+                                    <div class="progress-bar employer"
+                                        [style.width.%]="(metrics()?.employers / metrics()?.totalUsers) * 100 || 0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Application Pipeline -->
+                    <div class="viz-card">
+                        <h4>Application Pipeline</h4>
+                        <div class="pipeline-grid">
+                            <div class="pipeline-item">
+                                <span class="dot applied"></span>
+                                <span class="text">Applied</span>
+                                <span class="count">{{ metrics()?.applied || 0 }}</span>
+                            </div>
+                            <div class="pipeline-item">
+                                <span class="dot shortlisted"></span>
+                                <span class="text">Shortlisted</span>
+                                <span class="count">{{ metrics()?.shortlisted || 0 }}</span>
+                            </div>
+                            <div class="pipeline-item">
+                                <span class="dot selected"></span>
+                                <span class="text">Selected</span>
+                                <span class="count">{{ metrics()?.selected || 0 }}</span>
+                            </div>
+                            <div class="pipeline-item">
+                                <span class="dot rejected"></span>
+                                <span class="text">Rejected</span>
+                                <span class="count">{{ metrics()?.rejected || 0 }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Feed -->
+                <div class="activity-feed-section mt-4">
+                    <div class="viz-card">
+                        <div class="viz-card-header">
+                            <h4>Recent System Activity</h4>
+                            <a href="javascript:void(0)" (click)="switchTab('logs')" class="view-all-link">View All</a>
+                        </div>
+                        <div class="activity-list">
+                            @if (logs().length === 0 && !loading()) {
+                            <div class="empty-activity">
+                                <p>No recent activity detected.</p>
+                            </div>
+                            } @else {
+                            @for (log of logs().slice(0, 5); track log.id) {
+                            <div class="activity-item">
+                                <div class="activity-icon" [ngClass]="log.action.toLowerCase()">
+                                    <i class="bi" [ngClass]="{
+                                        'bi-plus-circle': log.action === 'CREATE',
+                                        'bi-pencil-square': log.action === 'UPDATE',
+                                        'bi-trash': log.action === 'DELETE'
+                                    }"></i>
+                                </div>
+                                <div class="activity-details">
+                                    <div class="activity-main">
+                                        <span class="user-pill">{{ log.changedByName }}</span>
+                                        <span class="action-text">{{ log.details }}</span>
+                                    </div>
+                                    <div class="activity-meta">
+                                        <span class="activity-time"><i class="bi bi-clock"></i> {{ log.changedAt |
+                                            date:'short' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+
+            <!-- Logs Tab -->
+            @if (activeTab() === 'logs') {
+            <div class="content-header">
+                <h2>Audit History</h2>
+            </div>
+            <div class="table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Action</th>
+                            <th>User</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (log of pagedLogs(); track log.id) {
+                        <tr>
+                            <td>{{ log.changedAt | date:'short' }}</td>
+                            <td><strong>{{ log.action }}</strong></td>
+                            <td>{{ log.changedByName }}</td>
+                            <td>{{ log.details }}</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <app-pagination [totalItems]="logs().length" [pageSize]="pageSize" [currentPage]="logPage()"
+                (pageChange)="logPage.set($event)">
+            </app-pagination>
+            }
+        </div>
+        }
+    </div>
+</div>

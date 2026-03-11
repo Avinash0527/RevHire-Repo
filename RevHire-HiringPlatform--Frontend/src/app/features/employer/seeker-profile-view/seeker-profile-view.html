@@ -1,0 +1,59 @@
+<div class="page-container animate-fade-in">
+    <a routerLink="/employer/applicants" class="back-link"><i class="bi bi-arrow-left"></i> Back to Applicants</a>
+
+    @if (loading()) {
+    <div class="profile-card">Loading profile...</div>
+    } @else if (!profile()) {
+    <div class="profile-card">Seeker profile not found.</div>
+    } @else {
+    <div class="profile-card hero">
+        <div class="avatar">
+            @if (profileImage()) {
+            <img [src]="profileImage()!" alt="Seeker profile image" class="avatar-img">
+            } @else {
+            {{ profile()!.name?.charAt(0) || 'S' }}
+            }
+        </div>
+        <div>
+            <h1 class="page-title">{{ profile()!.name || 'Seeker Profile' }}</h1>
+            <p class="page-sub">{{ profile()!.headline || profile()!.employmentStatus || 'Job Seeker' }}</p>
+            <p class="meta">{{ profile()!.email }} @if (profile()!.phone) { · {{ profile()!.phone }} }</p>
+        </div>
+    </div>
+
+    <div class="profile-grid">
+        <div class="profile-card">
+            <h3>Summary</h3>
+            <p>{{ profile()!.summary || profile()!.objective || 'No summary provided.' }}</p>
+        </div>
+
+        <div class="profile-card">
+            <h3>Location</h3>
+            <p>{{ profile()!.location || 'Not specified' }}</p>
+        </div>
+    </div>
+
+    <div class="profile-card">
+        <h3>Skills</h3>
+        <div class="chips">
+            @for (s of skills(); track s) {
+            <span class="chip">{{ s }}</span>
+            }
+            @if (skills().length === 0) {
+            <span class="muted">No skills listed.</span>
+            }
+        </div>
+    </div>
+
+    <div class="profile-grid">
+        <div class="profile-card">
+            <h3>Experience</h3>
+            <p>{{ profile()!.experience || 'Not specified' }}</p>
+        </div>
+        <div class="profile-card">
+            <h3>Education</h3>
+            <p>{{ profile()!.education || 'Not specified' }}</p>
+        </div>
+    </div>
+    }
+</div>

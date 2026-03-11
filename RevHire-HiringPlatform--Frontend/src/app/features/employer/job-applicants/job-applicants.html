@@ -1,0 +1,222 @@
+<div class="page-container animate-fade-in">
+    <!-- Header -->
+    <div class="header-flex">
+        <div>
+            <h1 class="page-title">Applicants Management</h1>
+            <p class="page-sub">Review candidates, manage statuses, and save top resumes.</p>
+        </div>
+        <div class="header-right-actions">
+            <!-- Search Bar -->
+            <div class="search-bar-container">
+                <i class="bi bi-search"></i>
+                <input type="text" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)"
+                    placeholder="Search by name or email…" class="search-input-custom">
+            </div>
+
+            <button class="btn-outline-custom" (click)="showFilters.set(!showFilters())" [class.active]="showFilters()">
+                <i class="bi bi-filter-right"></i> {{ showFilters() ? 'Hide Filters' : 'Filters' }}
+            </button>
+
+            <button class="btn-outline-custom" (click)="refresh()"><i class="bi bi-arrow-clockwise"></i>
+                Refresh</button>
+        </div>
+    </div>
+
+    <!-- Advanced Filters Panel -->
+    @if (showFilters()) {
+    <div class="advanced-filters-panel animate-slide-down">
+        <div class="filters-grid">
+            <div class="filter-item">
+                <label>Skills</label>
+                <input type="text" [ngModel]="skillFilter()" (ngModelChange)="skillFilter.set($event)"
+                    placeholder="e.g. Java, Python…" class="form-control-custom-sm">
+            </div>
+            <div class="filter-item">
+                <label>Experience</label>
+                <div class="multi-select-custom">
+                    <button class="ms-trigger" (click)="showExpMenu.set(!showExpMenu()); showEduMenu.set(false)">
+                        <span class="ms-label">{{ expFilters().length ? expFilters().join(', ') : 'Any Experience'
+                            }}</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    @if (showExpMenu()) {
+                    <div class="ms-menu animate-slide-down">
+                        @for (opt of experienceOptions; track opt) {
+                        <label class="ms-option">
+                            <input type="checkbox" [checked]="expFilters().includes(opt)" (change)="toggleExp(opt)">
+                            <span>{{ opt }}</span>
+                        </label>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+            <div class="filter-item">
+                <label>Education</label>
+                <div class="multi-select-custom">
+                    <button class="ms-trigger" (click)="showEduMenu.set(!showEduMenu()); showExpMenu.set(false)">
+                        <span class="ms-label">{{ eduFilters().length ? eduFilters().join(', ') : 'Any Education'
+                            }}</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    @if (showEduMenu()) {
+                    <div class="ms-menu animate-slide-down">
+                        @for (opt of educationOptions; track opt) {
+                        <label class="ms-option">
+                            <input type="checkbox" [checked]="eduFilters().includes(opt)" (change)="toggleEdu(opt)">
+                            <span>{{ opt }}</span>
+                        </label>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+            <div class="filter-item">
+                <label>Status</label>
+                <select [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)"
+                    class="form-control-custom-sm">
+                    <option value="ALL">All Statuses</option>
+                    <option value="APPLIED">Applied</option>
+                    <option value="REVIEWING">Reviewing</option>
+                    <option value="SHORTLISTED">Shortlisted</option>
+                    <option value="SELECTED">Selected</option>
+                    <option value="REJECTED">Rejected</option>
+                    <option value="WITHDRAWN">Withdrawn</option>
+                </select>
+            </div>
+        </div>
+        <div class="filters-footer">
+            <button class="btn-link-sm" (click)="resetFilters()">Clear all filters</button>
+        </div>
+    </div>
+    }
+
+    <!-- Bulk Actions -->
+    @if (selectedIds().size > 0) {
+    <div class="bulk-bar-container animate-fade-in">
+        <div class="bulk-bar">
+            <span class="bulk-count">{{ selectedIds().size }} selected</span>
+            <select [(ngModel)]="bulkStatus" class="form-control-custom-sm">
+                <option value="">Bulk Action…</option>
+                <option value="REVIEWING">Mark Reviewing</option>
+                <option value="SHORTLISTED">Mark Shortlisted</option>
+                <option value="SELECTED">Mark Selected</option>
+                <option value="REJECTED">Mark Rejected</option>
+            </select>
+            <button class="btn-bulk-apply" (click)="applyBulkStatus()" [disabled]="!bulkStatus">Apply</button>
+            <button class="btn-bulk-clear" (click)="clearSelection()">Clear</button>
+        </div>
+    </div>
+    }
+
+    <!-- Applicant List -->
+    <div class="applicants-list">
+        @if (loading()) {
+        @for (i of [1,2,3]; track i) {
+        <div class="applicant-skeleton"></div>
+        }
+        } @else if (filteredApplicants().length === 0) {
+        <div class="empty-state-card animate-fade-in">
+            <i class="bi bi-people" style="font-size:3rem; color:var(--color-text-muted)"></i>
+            <h3>No applicants match this criteria</h3>
+            <p>Try resetting the filters or check back later.</p>
+        </div>
+        } @else {
+        @for (app of pagedApplicants(); track app.id) {
+        <div class="applicant-card animate-fade-in" [class.selected]="selectedIds().has(app.id)"
+            [class.saved-resume]="isResumeSaved(app.jobSeekerId, app.jobId)">
+
+            <div class="ac-left">
+                <div class="cb-card">
+                    <input type="checkbox" class="cb-input" [checked]="selectedIds().has(app.id)"
+                        (change)="toggleSelect(app.id)" [disabled]="app.status === 'WITHDRAWN'">
+                </div>
+                <div class="applicant-avatar-wrap">
+                    @if (app.jobSeekerProfileImage) {
+                    <img [src]="app.jobSeekerProfileImage" class="applicant-avatar-img" [alt]="app.jobSeekerName">
+                    } @else {
+                    <div class="applicant-avatar-initial">
+                        {{ app.jobSeekerName.charAt(0) }}
+                    </div>
+                    }
+                </div>
+                <div>
+                    <div class="seeker-name">{{ app.jobSeekerName }}
+                        @if (isResumeSaved(app.jobSeekerId, app.jobId)) {
+                        <span class="saved-badge">SAVED</span>
+                        }
+                    </div>
+                    <div class="job-applied">Applied for <b>{{ app.jobTitle }}</b></div>
+                    <div class="seeker-email"><i class="bi bi-envelope"></i> {{ app.jobSeekerEmail }}</div>
+                    <div class="applied-date">on {{ app.appliedAt | date:'mediumDate' }}</div>
+                    @if (app.status === 'WITHDRAWN' && app.withdrawReason) {
+                    <div class="withdraw-reason mt-1"><i class="bi bi-info-circle"></i> Reason: {{ app.withdrawReason }}
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <div class="ac-center">
+                <app-status-badge [status]="app.status" />
+            </div>
+
+            <div class="ac-right">
+                <div class="status-actions">
+                    <div class="action-row-top">
+                        <select class="status-select" [value]="app.status"
+                            (change)="updateStatus(app.id, $any($event.target).value)"
+                            [disabled]="app.status === 'WITHDRAWN'">
+                            <option value="APPLIED">Applied</option>
+                            <option value="REVIEWING">Reviewing</option>
+                            <option value="SHORTLISTED">Shortlisted</option>
+                            <option value="SELECTED">Selected</option>
+                            <option value="REJECTED">Rejected</option>
+                            @if (app.status === 'WITHDRAWN') {
+                            <option value="WITHDRAWN">Withdrawn</option>
+                            }
+                        </select>
+                        <button class="btn-notes-toggle" (click)="toggleNotes(app.id)" title="Internal Notes">
+                            <i class="bi bi-sticky"></i>
+                        </button>
+                    </div>
+
+                    <div class="action-row-bottom">
+                        <button class="btn-icon-custom" title="View Profile"
+                            [routerLink]="['/employer/seeker', app.jobSeekerId]">
+                            <i class="bi bi-person-badge"></i>
+                        </button>
+                        <button class="btn-icon-custom" title="Download Resume" (click)="downloadResume(app)">
+                            <i class="bi bi-download"></i>
+                        </button>
+                        <button class="btn-icon-custom"
+                            [title]="isResumeSaved(app.jobSeekerId, app.jobId) ? 'Unsave' : 'Save Resume'"
+                            (click)="toggleSaveResume(app)">
+                            <i class="bi"
+                                [ngClass]="isResumeSaved(app.jobSeekerId, app.jobId) ? 'bi-bookmark-check-fill' : 'bi-bookmark'"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (openNotes().has(app.id)) {
+        <div class="notes-panel animate-slide-in">
+            <div class="notes-header">Internal Notes for {{ app.jobSeekerName }} ( {{app.jobTitle}} )</div>
+            <textarea class="notes-textarea" #noteArea [value]="app.notes || ''"
+                placeholder="Add private notes about this candidate..."></textarea>
+            <div class="mt-2 text-end">
+                <button class="btn-primary-custom btn-sm" (click)="saveNote(app, noteArea.value)">Save Note</button>
+            </div>
+        </div>
+        }
+        }
+
+        <div class="pagination-wrapper" style="margin-top: 2rem; display: flex; justify-content: center;">
+            <app-pagination [totalItems]="filteredApplicants().length" [pageSize]="pageSize"
+                [currentPage]="currentPage()" (pageChange)="currentPage.set($event)">
+            </app-pagination>
+        </div>
+        }
+
+    </div>
+</div>
