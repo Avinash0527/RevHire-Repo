@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface ChatMessage {
     role: 'user' | 'assistant' | 'system';
@@ -19,7 +20,7 @@ export interface OllamaResponse {
 })
 export class OllamaService {
     private http = inject(HttpClient);
-    private readonly OLLAMA_URL = 'http://localhost:11434/api/chat';
+    private readonly OLLAMA_URL = environment.ollamaUrl;
 
     private getSystemPrompt(role?: string): string {
         const base = `You are the RevHire AI Assistant, a helpful and professional companion for the RevHire recruitment platform. 
