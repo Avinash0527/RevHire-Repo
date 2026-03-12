@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -8,11 +8,12 @@ export interface ChatMessage {
     content: string;
 }
 
-export interface OllamaResponse {
-    model: string;
-    created_at: string;
-    message: ChatMessage;
-    done: boolean;
+export interface GroqResponse {
+    id: string;
+    choices: {
+        message: ChatMessage;
+        finish_reason: string;
+    }[];
 }
 
 @Injectable({
@@ -20,7 +21,8 @@ export interface OllamaResponse {
 })
 export class OllamaService {
     private http = inject(HttpClient);
-    private readonly OLLAMA_URL = environment.ollamaUrl;
+    private readonly GROQ_URL = environment.groqUrl;
+    private readonly API_KEY = environment.groqApiKey;
 
     private getSystemPrompt(role?: string): string {
         const base = `You are the RevHire AI Assistant, a helpful and professional companion for the RevHire recruitment platform. 
@@ -44,7 +46,7 @@ export class OllamaService {
 
     chat(messages: ChatMessage[], role?: string): Observable<string> {
         const payload = {
-            model: 'tinyllama',
+            model: 'llama-3.2-3b-preview',
             messages: [
                 { role: 'system', content: this.getSystemPrompt(role) },
                 ...messages
@@ -52,8 +54,13 @@ export class OllamaService {
             stream: false
         };
 
-        return this.http.post<OllamaResponse>(this.OLLAMA_URL, payload).pipe(
-            map(res => res.message.content)
+        const headers = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.API_KEY}`
+        });
+
+        return this.http.post<GroqResponse>(this.GROQ_URL, payload, { headers }).pipe(
+            map(res => res.choices[0].message.content)
         );
     }
 }
