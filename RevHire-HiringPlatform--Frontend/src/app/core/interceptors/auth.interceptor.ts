@@ -13,6 +13,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         return next(req);
     }
 
+    // Skip token for external Groq API calls (Groq uses its own Bearer token)
+    if (req.url.includes('api.groq.com')) {
+        return next(req);
+    }
+
     const token = localStorage.getItem('revhire_token');
 
     if (token && token !== 'null' && token !== 'undefined') {
