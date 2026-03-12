@@ -90,8 +90,9 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
                 this.loading.set(false);
             },
             error: (err) => {
-                console.error('Ollama Chat Error:', err);
-                this.messages.update(msgs => [...msgs, { role: 'assistant', content: 'Sorry, I am having trouble connecting to my brain right now. Please make sure Ollama is running locally.' }]);
+                console.error('Groq Chat Error:', err);
+                const errorMsg = err.error?.error?.message || err.message || 'Unknown error. Check console.';
+                this.messages.update(msgs => [...msgs, { role: 'assistant', content: `Error communicating with AI: ${errorMsg}` }]);
                 this.loading.set(false);
             }
         });
