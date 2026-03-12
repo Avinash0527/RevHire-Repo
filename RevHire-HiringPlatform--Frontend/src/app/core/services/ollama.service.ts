@@ -44,7 +44,7 @@ export class OllamaService {
 
     chat(messages: ChatMessage[], role?: string): Observable<string> {
         const payload = {
-            model: 'llama3.2',
+            model: 'tinyllama',
             messages: [
                 { role: 'system', content: this.getSystemPrompt(role) },
                 ...messages
