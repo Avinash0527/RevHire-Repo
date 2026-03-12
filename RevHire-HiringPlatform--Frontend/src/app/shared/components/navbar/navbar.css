@@ -197,9 +197,19 @@
     font-weight: 600;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 550px) {
     .user-name {
         display: none;
+    }
+
+    .search-container.expanded {
+        width: 180px !important;
+    }
+}
+
+@media (max-width: 400px) {
+    .search-container.expanded {
+        width: 130px !important;
     }
 }
 
@@ -352,7 +362,7 @@
 
 .mobile-menu {
     position: fixed;
-    top: calc(var(--navbar-height) + var(--carousel-height));
+    top: var(--navbar-height);
     left: 0;
     right: 0;
     background: var(--color-surface);
@@ -557,9 +567,10 @@
     border-radius: 0.5rem;
     padding: 2px;
     transition: all 0.3s ease;
-    width: 50px;
+    width: 38px;
     height: 36px;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .search-container.expanded {
@@ -615,6 +626,7 @@
     top: calc(100% + 8px);
     right: 0;
     width: 300px;
+    max-width: 90vw;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: 0.75rem;

@@ -36,6 +36,24 @@
     margin-bottom: 1.5rem;
 }
 
+@media (max-width: 600px) {
+    .job-hero {
+        padding: 1.5rem 1rem;
+    }
+
+    .job-hero-main {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .job-hero-tags,
+    .job-meta-row {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}
+
 .company-logo-xl {
     width: 90px;
     height: 90px;
@@ -114,6 +132,25 @@
     flex-wrap: wrap;
     padding-top: 1.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 600px) {
+    .job-hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .action-btns {
+        flex-direction: column;
+    }
+
+    .btn-apply,
+    .btn-save,
+    .btn-applied {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 .salary-display .salary-label {
