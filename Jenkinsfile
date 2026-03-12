@@ -7,10 +7,28 @@ pipeline {
     }
 
     stages {
+        stage('Setup Java 21 Environment') {
+            steps {
+                sh '''
+                if [ ! -d "jdk-21" ]; then
+                    echo "Downloading Amazon Corretto 21..."
+                    wget -q https://corretto.aws/downloads/latest/amazon-corretto-21-x64-linux-jdk.tar.gz
+                    tar -xzf amazon-corretto-21-x64-linux-jdk.tar.gz
+                    mv amazon-corretto-21.* jdk-21
+                fi
+                '''
+            }
+        }
+
         stage('Build Backend') {
             steps {
                 dir('RevHire-HiringPlatform') {
-                    sh 'mvn clean package -DskipTests'
+                    sh '''
+                    export JAVA_HOME=$(pwd)/../jdk-21
+                    export PATH=$JAVA_HOME/bin:$PATH
+                    java -version
+                    mvn clean package -DskipTests
+                    '''
                 }
             }
         }
