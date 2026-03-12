@@ -51,6 +51,7 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 dir('RevHire-HiringPlatform--Frontend') {
+                    sh 'sed -i "s/GROQ_API_KEY_PLACEHOLDER/${GROQ_API_KEY}/g" src/environments/environment.prod.ts'
                     sh 'npm install'
                     sh 'npm run build -- --configuration production'
                 }
